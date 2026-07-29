@@ -1,4 +1,762 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 运动户外行业通案 · 什么值得买（版本A 电光硬核）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================
+   2026 运动户外行业通案 — 版本A 电光硬核
+   主色: 电光宝蓝 #2E2CF2 / 荧光绿 #2FE86B / 黑白  点缀: 橙 #FF6A2B
+   固定 1920×1080 舞台整体缩放；一页一观点；数据可视化
+   =========================================================== */
+:root{
+  --blue:#2E2CF2; --blue-d:#1B1A9E; --blue-2:#4B49FF; --green:#2FE86B; --green-d:#12a04a;
+  --ink:#0A0A0A; --white:#FFFFFF; --orange:#FF6A2B; --grey:#8A8FA6; --grey-2:#cdd0e0;
+  --line:rgba(255,255,255,.14); --panel:rgba(255,255,255,.05);
+  --cjk:'Noto Sans SC',sans-serif; --disp:'Anton',sans-serif; --num:'Barlow Semi Condensed',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:var(--cjk)}
+
+/* ---- 固定舞台 ---- */
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:#050510}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:#070712}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;visibility:hidden;opacity:0;transition:opacity .5s ease;background:#070712}
+.slide.active{visibility:visible;opacity:1;z-index:1}
+
+/* ---- 入场动画 ---- */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.slide.active .reveal{opacity:1;transform:none}
+.slide.active .d1{transition-delay:.1s}.slide.active .d2{transition-delay:.2s}.slide.active .d3{transition-delay:.3s}
+.slide.active .d4{transition-delay:.4s}.slide.active .d5{transition-delay:.5s}.slide.active .d6{transition-delay:.6s}
+.slide.active .d7{transition-delay:.7s}.slide.active .d8{transition-delay:.8s}
+
+/* ---- 通用文本块 ---- */
+.pad{position:absolute;left:96px;right:96px;top:80px;bottom:80px;display:flex;flex-direction:column;justify-content:center}
+.pad>*{position:relative;z-index:1}
+/* 装饰层：填充下方留白、增加视觉层次 */
+.pad::before{content:'';position:absolute;z-index:0;width:560px;height:560px;right:-130px;bottom:-170px;border:2px solid rgba(47,232,107,.16);border-radius:50%;pointer-events:none}
+.pad::after{content:'';position:absolute;z-index:0;width:460px;height:460px;left:-150px;bottom:-140px;background:radial-gradient(circle,rgba(46,44,242,.4),transparent 70%);filter:blur(24px);pointer-events:none}
+.deco-dots{position:absolute;z-index:0;right:70px;top:120px;width:220px;height:150px;background-image:radial-gradient(rgba(255,255,255,.12) 2px,transparent 2px);background-size:26px 26px;pointer-events:none}
+.deco-sq{position:absolute;z-index:0;width:70px;height:70px;background:var(--green);opacity:.85;transform:rotate(12deg);pointer-events:none}
+.kicker{display:inline-flex;align-self:flex-start;align-items:center;gap:14px;background:var(--blue);color:#fff;font-weight:700;font-size:26px;padding:12px 26px;border-radius:8px;letter-spacing:.05em}
+.kicker.green{background:var(--green);color:var(--ink)}
+.h2{font-family:var(--cjk);font-weight:900;color:#fff;font-size:74px;line-height:1.1;margin:26px 0 10px}
+.h2 em{color:var(--green);font-style:normal}
+.h2 b{color:var(--blue-2)}
+.sub{color:var(--grey-2);font-size:30px;line-height:1.5;max-width:1500px}
+.wmk{position:absolute;font-family:var(--disp);color:rgba(255,255,255,.045);font-size:300px;line-height:.8;pointer-events:none;user-select:none;white-space:nowrap}
+
+/* ===== SMZDM 条带 ===== */
+.band{position:absolute;left:0;width:100%;height:56px;background:var(--blue);display:flex;align-items:center;justify-content:space-around;color:#fff;font-family:var(--num);font-weight:800;letter-spacing:.35em;font-size:26px;overflow:hidden}
+.band span{opacity:.9}
+
+/* ===== 封面 / 尾页 ===== */
+.cover{background:#050510}
+.cover .band.top{top:0}.cover .band.bot{bottom:0}
+.cover-photos{position:absolute;top:56px;bottom:56px;left:0;right:0;display:grid;grid-template-columns:1fr 1fr}
+.cover-photos .ph{background-size:cover;background-position:center}
+.ph.l{background-image:linear-gradient(120deg,rgba(5,5,16,.25),rgba(46,44,242,.4)),url('https://images.unsplash.com/photo-1533560904424-a0c61dc306fc?w=1200&q=80')}
+.ph.r{background-image:linear-gradient(300deg,rgba(5,5,16,.25),rgba(47,232,107,.3)),url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=1200&q=80')}
+.cover-mid{position:absolute;inset:56px 0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.cover-mid .yr{color:var(--green);font-family:var(--num);font-weight:800;font-size:64px;letter-spacing:.05em;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.cover-title h1{font-family:var(--cjk);font-weight:900;font-size:168px;line-height:.98;color:#fff;letter-spacing:.02em;text-shadow:0 10px 50px rgba(0,0,0,.6);margin:8px 0 20px}
+.cover-slab{display:inline-block;background:var(--green);color:var(--ink);font-weight:900;font-size:40px;padding:16px 40px;transform:skewX(-8deg);box-shadow:0 12px 40px rgba(47,232,107,.35)}
+.cover-slab span{display:inline-block;transform:skewX(8deg)}
+.cover-org{margin-top:26px;color:rgba(255,255,255,.85);font-size:26px;letter-spacing:.2em}
+.logo-badge{position:absolute;top:96px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:24px;z-index:2}
+.logo-badge i{display:flex;width:38px;height:38px;background:var(--blue);border-radius:8px;align-items:center;justify-content:center;font-style:normal;font-weight:900}
+
+/* ===== 章节页 ===== */
+.section{background:#05050f}
+.section .sbg{position:absolute;inset:0;background-size:cover;background-position:center}
+.section .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,15,.9) 30%,rgba(5,5,15,.55))}
+.sec-inner{position:absolute;left:120px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;max-width:1300px}
+.sec-no{font-family:var(--num);font-weight:800;font-size:120px;color:transparent;-webkit-text-stroke:3px var(--green);line-height:1}
+.sec-title{font-family:var(--cjk);font-weight:900;font-size:100px;line-height:1.06;color:#fff;margin:18px 0 30px}
+.sec-title em{color:var(--green);font-style:normal}
+.sec-desc{color:var(--grey-2);font-size:32px;line-height:1.6;max-width:1100px}
+.sec-toc{display:flex;gap:20px;margin-top:44px;flex-wrap:wrap}
+.sec-toc span{border:1px solid var(--line);background:rgba(46,44,242,.2);color:#fff;font-size:26px;font-weight:500;padding:14px 30px;border-radius:40px}
+
+/* ===== 观点/陈述页 ===== */
+.stmt-big{font-family:var(--cjk);font-weight:900;font-size:88px;line-height:1.2;color:#fff}
+.stmt-big em{color:var(--green);font-style:normal}
+.quote-line{border-left:8px solid var(--green);padding-left:34px;margin-top:40px}
+
+/* ===== 卡片网格 ===== */
+.grid{display:grid;gap:28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:34px 36px}
+.card h4{color:#fff;font-size:34px;font-weight:700;display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.card h4 .dot{width:16px;height:16px;background:var(--green);border-radius:5px;flex:none}
+.card p{color:var(--grey-2);font-size:26px;line-height:1.55}
+.card .hi{color:var(--green);font-weight:700}
+.card.blue{background:linear-gradient(160deg,rgba(46,44,242,.35),rgba(46,44,242,.1));border-color:rgba(75,73,255,.5)}
+
+/* ===== 数据统计 ===== */
+.stat-row{display:grid;gap:28px}
+.stat{background:linear-gradient(180deg,rgba(46,44,242,.22),rgba(46,44,242,.06));border:1px solid rgba(46,44,242,.5);border-radius:22px;padding:36px 30px}
+.stat .num{font-family:var(--num);font-weight:800;color:var(--green);font-size:96px;line-height:1}
+.stat .lbl{color:var(--grey-2);font-size:26px;margin-top:12px;line-height:1.4}
+.bars{display:flex;align-items:flex-end;gap:38px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar .col{width:100%;border-radius:14px 14px 0 0;background:linear-gradient(180deg,var(--blue),var(--blue-d));position:relative;transition:height 1s cubic-bezier(.16,1,.3,1)}
+.bar:nth-child(even) .col{background:linear-gradient(180deg,var(--green),var(--green-d))}
+.bar .v{position:absolute;top:-52px;left:0;right:0;text-align:center;font-family:var(--num);font-weight:800;font-size:40px;color:#fff}
+.bar .t{margin-top:18px;color:var(--grey-2);font-size:26px;font-weight:700;text-align:center}
+.donut{display:flex;flex-direction:column;align-items:center;gap:16px}
+.ring{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
+.ring::after{content:'';position:absolute;inset:24px;border-radius:50%;background:#070712}
+.ring .v{position:relative;z-index:1;font-family:var(--num);font-weight:800;font-size:50px;color:#fff}
+
+/* ===== 表格 ===== */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;color:#fff;font-size:26px}
+.tbl th{background:var(--blue);color:#fff;font-weight:700;padding:20px 24px;text-align:left;font-size:27px}
+.tbl th:first-child{border-radius:14px 0 0 0}.tbl th:last-child{border-radius:0 14px 0 0}
+.tbl td{padding:20px 24px;border-bottom:1px solid var(--line);color:var(--grey-2);vertical-align:top;line-height:1.45}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.tbl td b,.tbl td .hi{color:#fff;font-weight:700}
+.tbl td .g{color:var(--green);font-weight:800;font-family:var(--num);font-size:30px}
+.tbl .cat{color:var(--green);font-weight:700}
+
+/* ===== 流程箭头 ===== */
+.flow{display:flex;align-items:stretch;gap:0}
+.flow-step{flex:1;position:relative;background:var(--panel);border:1px solid var(--line);padding:32px 30px 32px 54px;margin-left:-24px;clip-path:polygon(0 0,calc(100% - 34px) 0,100% 50%,calc(100% - 34px) 100%,0 100%,34px 50%)}
+.flow-step:first-child{margin-left:0;clip-path:polygon(0 0,calc(100% - 34px) 0,100% 50%,calc(100% - 34px) 100%,0 100%)}
+.flow-step.on{background:linear-gradient(120deg,var(--blue),var(--blue-2))}
+.flow-step .n{font-family:var(--num);font-weight:800;color:var(--green);font-size:40px}
+.flow-step h5{color:#fff;font-size:30px;font-weight:700;margin:8px 0 10px}
+.flow-step p{color:var(--grey-2);font-size:22px;line-height:1.4}
+
+/* ===== 气泡标签 ===== */
+.pill{display:inline-block;font-size:24px;font-weight:700;padding:9px 22px;border-radius:30px}
+.pill.b{background:var(--blue);color:#fff}.pill.g{background:var(--green);color:var(--ink)}.pill.o{background:var(--orange);color:#fff}
+
+/* ===== 图片展示位（可填自有截图/实景） ===== */
+.imgstrip{display:grid;gap:22px;margin-top:34px}
+.imgslot{border:2px dashed rgba(47,232,107,.5);border-radius:18px;background:rgba(47,232,107,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9fb;min-height:150px;gap:8px}
+.imgslot .ic{font-size:44px;opacity:.65}
+.imgslot span{font-size:24px;font-weight:700;letter-spacing:.05em}
+.imgslot small{color:#7d86a8;font-size:20px;font-weight:400}
+
+/* ===== 书签角标 & 案例页 ===== */
+.bookmark{position:absolute;left:96px;top:0;width:150px;height:180px;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:44px;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);z-index:3}
+.case-head{position:absolute;left:280px;top:60px;right:96px}
+.case-tag{color:var(--green);font-weight:700;font-size:28px;letter-spacing:.1em}
+.case-title{font-family:var(--cjk);font-weight:900;color:#fff;font-size:60px;line-height:1.34;margin-top:12px}
+.case-title b{color:var(--blue);background:var(--green);padding:2px 14px;border-radius:6px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.case-body{position:absolute;left:96px;right:96px;top:300px;bottom:96px;display:grid;grid-template-columns:1.15fr 1fr;gap:40px}
+.ph-box{border:3px dashed rgba(47,232,107,.55);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9fb;gap:16px;background:rgba(47,232,107,.04);text-align:center}
+.ph-box .ic{font-size:70px;opacity:.7}
+.ph-box .tx{font-size:32px;font-weight:700;letter-spacing:.06em}
+.ph-box .tx small{display:block;color:#7d86a8;font-weight:400;font-size:23px;margin-top:10px;letter-spacing:0}
+.case-right{display:flex;flex-direction:column;gap:22px}
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 30px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.slot h4{color:#fff;font-size:30px;font-weight:700;display:flex;align-items:center;gap:12px}
+.slot h4::before{content:'';width:14px;height:14px;background:var(--green);border-radius:4px}
+.slot p{color:#7d86a8;font-size:24px;margin-top:8px}
+.slot .pill{margin-top:12px;align-self:flex-start}
+
+/* ===== 导航 & 页码 ===== */
+.nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99;display:flex;gap:10px;align-items:center;font-family:var(--num);color:#fff;font-size:20px}
+.nav button{background:rgba(255,255,255,.12);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px}
+.nav #pg{background:rgba(0,0,0,.45);padding:4px 14px;border-radius:20px;min-width:74px;text-align:center}
+.pageno{position:absolute;right:60px;bottom:40px;font-family:var(--num);font-weight:700;color:rgba(255,255,255,.35);font-size:24px;z-index:2}
+.progress{position:fixed;top:0;left:0;height:4px;background:var(--green);z-index:100;transition:width .4s ease}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
 <body>
-<h1>这是demo1页面</h1>
+<div class="progress" id="prog"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="stage">
+
+  <!-- ============ 1. 封面 ============ -->
+  <section class="slide cover active">
+    <div class="cover-photos"><div class="ph l"></div><div class="ph r"></div></div>
+    <div class="band top"><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span></div>
+    <div class="band bot"><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span></div>
+    <div class="logo-badge reveal"><i>值</i>什么值得买</div>
+    <div class="cover-mid">
+      <div class="yr reveal">2026 · 什么值得买</div>
+      <div class="cover-title reveal d1"><h1>趣野趣运动</h1></div>
+      <div class="cover-slab reveal d2"><span>运动户外行业营销解决方案</span></div>
+      <div class="cover-org reveal d3">什么值得买 · 商业化中心</div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 章节页① ============ -->
+  <section class="slide section">
+    <div class="sbg" style="background-image:url('https://images.unsplash.com/photo-1502904550040-7534597429ae?w=1600&q=80')"></div>
+    <div class="veil"></div>
+    <div class="sec-inner">
+      <div class="sec-no reveal">01</div>
+      <div class="sec-title reveal d1">重新认识<br><em>什么值得买</em></div>
+      <div class="sec-desc reveal d2">GEN2 时代 —— 从"什么便宜"到"什么值得"，<br>一个 AI 驱动的全网兴趣消费指南。</div>
+    </div>
+    <div class="pageno">02</div>
+  </section>
+
+  <!-- ============ 3. Slide1 我们的新名片 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:-20px;top:120px">SMZDM</div>
+    <div class="pad">
+      <div class="kicker reveal">我们的新名片</div>
+      <h2 class="h2 reveal d1">AI 驱动的<em>全网兴趣消费指南</em></h2>
+      <div class="sub reveal d2">不只省钱，更帮你找到"该买什么、怎么玩" —— 用户是拿着预算来找解决方案。</div>
+      <div class="stat-row reveal d3" style="grid-template-columns:repeat(4,1fr);margin-top:60px">
+        <div class="stat"><div class="num" data-c="8300">0</div><div class="lbl">激活用户（万+）</div></div>
+        <div class="stat"><div class="num" data-c="4004">0</div><div class="lbl">月活用户（万+）</div></div>
+        <div class="stat"><div class="num" data-c="10" data-suf="亿+">0</div><div class="lbl">MCP 月度调用量</div></div>
+        <div class="stat"><div class="num" data-t="高粘性" style="font-size:64px">高粘性</div><div class="lbl">· 高购买力人群</div></div>
+      </div>
+    </div>
+    <div class="pageno">03</div>
+  </section>
+
+  <!-- ============ 4. Slide2 进化论 ============ -->
+  <section class="slide">
+    <div class="wmk" style="left:-10px;bottom:-40px">EVOLVE</div>
+    <div class="pad">
+      <div class="kicker reveal">进化论</div>
+      <h2 class="h2 reveal d1">从"什么便宜"到<em>"什么值得"</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr;margin-top:48px">
+        <div class="card"><h4><span class="dot"></span>1.0 时代 · 过去</h4><p>购物决策的"比价终点站"，"薅羊毛"，来就走。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>2.0 时代 · 现在</h4><p><span class="hi">兴趣同好聚集地</span>——研究装备、分享热爱、寻找同好。</p></div>
+      </div>
+      <div class="card reveal d3" style="margin-top:28px;background:rgba(47,232,107,.08);border-color:rgba(47,232,107,.4)">
+        <h4><span class="dot"></span>核心变革 · 全链路赋能</h4>
+        <p>从理解、生成到推荐：<span class="hi">内容引擎（AIUC/AIGC）</span> + <span class="hi">MCP（AI 数据开放平台）</span> + AI 购物助手"张大妈"。</p>
+      </div>
+    </div>
+    <div class="pageno">04</div>
+  </section>
+
+  <!-- ============ 5. 章节页② ============ -->
+  <section class="slide section">
+    <div class="sbg" style="background-image:url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600&q=80')"></div>
+    <div class="veil"></div>
+    <div class="sec-inner">
+      <div class="sec-no reveal">02</div>
+      <div class="sec-title reveal d1">运动户外赛道<br>为什么必须<em>重视值得买</em>？</div>
+      <div class="sec-desc reveal d2">运动户外 = 高决策行业，本质是"高信任决策"。<br>品牌要争夺的，是用户最后做决定的位置。</div>
+    </div>
+    <div class="pageno">05</div>
+  </section>
+
+  <!-- ============ 6. Slide3 AI时代可靠信源 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;top:80px">TRUST</div>
+    <div class="pad">
+      <div class="kicker reveal">AI 时代消费决策的可靠信源</div>
+      <h2 class="h2 reveal d1">运动户外 = <em>高信任决策</em></h2>
+      <div class="sub reveal d2">用户不会因为一条视频就买 —— ¥5000 公路车｜¥3000 冲锋衣｜¥2000 碳板跑鞋</div>
+      <div class="quote-line reveal d3" style="margin-top:40px">
+        <div style="color:#fff;font-size:34px;font-weight:700;line-height:1.6">查参数 → 看对比 → 搜体验 → 问 AI → 问专业用户 → 找长期口碑</div>
+      </div>
+      <div class="grid reveal d4" style="grid-template-columns:1fr 1fr;margin-top:44px">
+        <div class="card"><h4><span class="dot"></span>争夺的不是"曝光位"</h4><p>而是"用户最后做决定的位置"。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>值得买 ≠ 广告平台</h4><p>值得买 = <span class="hi">决策平台</span>，AI 时代消费决策的可靠信源。</p></div>
+      </div>
+    </div>
+    <div class="pageno">06</div>
+  </section>
+
+  <!-- ============ 7. Slide4 硬核玩家聚集地 ============ -->
+  <section class="slide">
+    <div class="wmk" style="left:-10px;top:60px">HARDCORE</div>
+    <div class="pad">
+      <div class="kicker reveal">"硬核玩家"的聚集地</div>
+      <h2 class="h2 reveal d1">理性中产 · <em>参数党</em> · 发烧友</h2>
+      <div class="sub reveal d2">区别于小红书的打卡党、抖音的冲动党。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(2,1fr);margin-top:44px;gap:26px">
+        <div class="card"><h4><span class="dot"></span>高决策浓度</h4><p>带着明确需求来，偏器材/装备/功能服饰/专业鞋。</p></div>
+        <div class="card"><h4><span class="dot"></span>高专业度</h4><p>功能导向＞颜值导向，对 Gore-Tex / Vibram 高度敏感。</p></div>
+        <div class="card"><h4><span class="dot"></span>高消费力</h4><p>25-39 岁黄金年龄带，一线/新一线集中，"不怕贵，怕不值"。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>高复购率</h4><p>近 365 天高频消费人群占比 <span class="hi" style="font-family:var(--num);font-size:40px">61.41%</span></p></div>
+      </div>
+    </div>
+    <div class="pageno">07</div>
+  </section>
+
+  <!-- ============ 8. Slide5 跑者热搜场 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">"跑者"的热搜场</div>
+      <h2 class="h2 reveal d1" style="font-size:64px">从跑步词云看到的<em>6 个机会</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:repeat(3,1fr);margin-top:40px;gap:24px">
+        <div class="card"><h4><span class="dot"></span>搜索"去品牌化"</h4><p>抢占品类词/场景词，布局"大体重跑鞋""5 分配速缓震"。</p></div>
+        <div class="card"><h4><span class="dot"></span>型号词爆发</h4><p>gt2000/kayano/赤兔8…测评内容就是转化工具。</p></div>
+        <div class="card"><h4><span class="dot"></span>国际/国产两套打法</h4><p>国际打型号，国产打平替，"同价位最优"切入。</p></div>
+        <div class="card"><h4><span class="dot"></span>专业+潮流并存</h4><p>参数硬核＋穿搭种草，大促前 2 个月铺设。</p></div>
+        <div class="card"><h4><span class="dot"></span>户外装备第二增长极</h4><p>"长决策+高客单"需长期蓄水，提前铺测评清单。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>跑步装备受青睐</h4><p>跑步消费内容 <span class="hi">90%</span> 来自跑步装备，实战测评+权威榜单最受信任。</p></div>
+      </div>
+    </div>
+    <div class="pageno">08</div>
+  </section>
+
+  <!-- ============ 9. Slide6 种草力 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;bottom:-30px">UGC</div>
+    <div class="pad">
+      <div class="kicker reveal">"普通用户 + 达人"的种草力都惊人</div>
+      <h2 class="h2 reveal d1">让品牌出现在<em>每一个对比表里</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr;margin-top:52px;gap:30px">
+        <div class="card"><h4><span class="dot"></span>普通 UGC · 长尾流量入口</h4><p>TOP1000 文章中 UGC 占比最高，阅读超 10 分钟、评论过百的爆款不乏。<br>百度/AI 搜索持续检索 = 品牌免费长期流量。</p><span class="pill g" style="margin-top:16px">打法：众测+晒物，买完就写</span></div>
+        <div class="card blue"><h4><span class="dot"></span>达人 UGC · 决策转化加速器</h4><p>资深生活家横向对比测评+选购指南。"15 款冲锋衣横评""万字解析 15 双跑鞋" = 高意向用户聚集地。</p><span class="pill g" style="margin-top:16px">打法：出现在决策路径上</span></div>
+      </div>
+    </div>
+    <div class="pageno">09</div>
+  </section>
+
+  <!-- ============ 10. Slide7 最后一公里 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">高客单消费决策的"最后一公里"</div>
+      <h2 class="h2 reveal d1" style="font-size:60px">卡在"已决定要买、正在挑哪一款"<em>的最后环节</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr;margin-top:36px;gap:40px;align-items:start">
+        <table class="tbl reveal d2">
+          <thead><tr><th>平台</th><th>用户阶段</th><th>核心价值</th></tr></thead>
+          <tbody>
+            <tr><td>抖音</td><td>被激发兴趣</td><td>做曝光</td></tr>
+            <tr><td>小红书</td><td>建立向往</td><td>做种草</td></tr>
+            <tr><td><b>什么值得买</b></td><td><b>最终决策验证</b></td><td class="g">做转化</td></tr>
+            <tr><td>AI 搜索</td><td>聚合答案</td><td>做长期心智</td></tr>
+          </tbody>
+        </table>
+        <table class="tbl reveal d3">
+          <thead><tr><th>测评模式</th><th>适用场景</th><th>核心打法</th></tr></thead>
+          <tbody>
+            <tr><td class="cat">品类横评</td><td>竞品太多选不过来</td><td>进入横评名单，对比中胜出</td></tr>
+            <tr><td class="cat">价位段选购</td><td>新客降低决策门槛</td><td>按价格带拦截"XX 元买什么"</td></tr>
+            <tr><td class="cat">真实晒物</td><td>口碑积累期</td><td>素人实测＞达人推荐</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pageno">10</div>
+  </section>
+
+  <!-- ============ 11. 章节页③ ============ -->
+  <section class="slide section">
+    <div class="sbg" style="background-image:url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&q=80')"></div>
+    <div class="veil"></div>
+    <div class="sec-inner">
+      <div class="sec-no reveal">03</div>
+      <div class="sec-title reveal d1">运动户外的<br><em>四种消费决策模式</em></div>
+      <div class="sec-desc reveal d2">品类是表象，决策模式才是营销底层逻辑。</div>
+      <div class="sec-toc reveal d3"><span>参数驱动型</span><span>装备升级型</span><span>兴趣破圈型</span><span>生活方式型</span></div>
+    </div>
+    <div class="pageno">11</div>
+  </section>
+
+  <!-- ============ 12. Slide8 四种决策模式总览 ============ -->
+  <section class="slide">
+    <div class="pad" style="top:64px">
+      <div class="kicker reveal">找到您品牌的"营销底层逻辑"</div>
+      <h2 class="h2 reveal d1" style="font-size:56px;margin:18px 0 24px">四种决策模式总览</h2>
+      <table class="tbl reveal d2" style="font-size:24px">
+        <thead><tr><th>决策模式</th><th>代表品类</th><th>决策特征</th><th>核心卡点</th><th>内容重点</th><th>对应案例</th></tr></thead>
+        <tbody>
+          <tr><td class="cat">参数驱动型</td><td>跑步、健身</td><td>对比参数、看测评</td><td>竞品参数内卷</td><td>深度测评</td><td><b>昂跑 · 必迈</b></td></tr>
+          <tr><td class="cat">装备升级型</td><td>露营、徒步、滑雪</td><td>高客单重决策，需专业背书</td><td>新手门槛高、选错成本大</td><td>专业攻略</td><td><b>迪卡侬 · NIKE · HOKA</b></td></tr>
+          <tr><td class="cat">兴趣破圈型</td><td>路亚、攀岩、飞盘</td><td>社群驱动，从种草到入坑</td><td>认知空白</td><td>入门指南</td><td>兴趣圈子运营</td></tr>
+          <tr><td class="cat">生活方式型</td><td>折叠车、公路车、E-bike</td><td>重体验，是一种生活选择</td><td>怕踩坑，线下服务是关键</td><td>长周期内容</td><td><b>九号 · 雅迪</b></td></tr>
+        </tbody>
+      </table>
+      <div class="sub reveal d3" style="margin-top:26px;font-size:26px;color:var(--green)">为什么按决策模式分，不按品类分？——品类是表象，决策模式才是营销底层逻辑。</div>
+    </div>
+    <div class="pageno">12</div>
+  </section>
+
+  <!-- ============ 13. Slide9 参数驱动型-人群 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;top:100px">RUNNING</div>
+    <div class="pad">
+      <div class="kicker green reveal">参数驱动型 · 专业运动与健身</div>
+      <h2 class="h2 reveal d1">高频复购 · <em>参数敏感</em> · 横评驱动</h2>
+      <div class="sub reveal d2">跑步、健身、瑜伽 —— 品牌忠诚度摇摆，靠口碑与参数占位取胜。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(4,1fr);margin-top:56px;gap:22px">
+        <div class="card"><h4><span class="dot"></span>高频复购</h4><p>持续换新、成套购买。</p></div>
+        <div class="card"><h4><span class="dot"></span>参数敏感</h4><p>缓震/支撑/配速逐项对比。</p></div>
+        <div class="card"><h4><span class="dot"></span>横评驱动</h4><p>依赖对比榜单做最终选择。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>忠诚度摇摆</h4><p>竞品参数内卷，谁更值买谁。</p></div>
+      </div>
+    </div>
+    <div class="pageno">13</div>
+  </section>
+
+  <!-- ============ 14. Slide10 参数驱动型-解法 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker green reveal">值得买解法</div>
+      <h2 class="h2 reveal d1">口碑铸墙，<em>参数占位</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:repeat(3,1fr);margin-top:44px;gap:24px">
+        <div class="card"><h4><span class="dot"></span>专业众测</h4><p>资深跑者/健身达人实测，"和我一样的人"最可信。</p></div>
+        <div class="card"><h4><span class="dot"></span>运动达人矩阵</h4><p>运动达人分层覆盖，跑量之王/话题明星/意见领袖。</p></div>
+        <div class="card"><h4><span class="dot"></span>横评内容矩阵</h4><p>"300-500 元跑鞋横评""2026 缓震跑鞋推荐"。</p></div>
+        <div class="card"><h4><span class="dot"></span>参数占位</h4><p>大体重/配速/缓震/支撑/慢跑 关键词卡位。</p></div>
+        <div class="card blue" style="grid-column:span 2"><h4><span class="dot"></span>场景关联</h4><p>"夏季减脂""开跑季"捆绑智能手表+运动服饰 —— 从"一双鞋"到<span class="hi">"一套方案"</span>。</p></div>
+      </div>
+      <div class="imgstrip reveal d4" style="grid-template-columns:1fr 1fr">
+        <div class="imgslot"><div class="ic">🖼️</div><span>图片位 · 横评内容示意</span><small>可放跑鞋横评/榜单截图</small></div>
+        <div class="imgslot"><div class="ic">🖼️</div><span>图片位 · 达人矩阵示意</span><small>可放达人分层/众测截图</small></div>
+      </div>
+    </div>
+    <div class="pageno">14</div>
+  </section>
+
+  <!-- ============ 15. 案例·昂跑 ============ -->
+  <section class="slide">
+    <div class="bookmark reveal">跑步</div>
+    <div class="case-head reveal">
+      <div class="case-tag">参数驱动型 · 案例 01</div>
+      <div class="case-title">昂跑：资深跑者拆解新品参数<br><b>上脚实测</b> 体验种草</div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>结案数据 / 内容示意图 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">15</div>
+  </section>
+
+  <!-- ============ 16. 案例·必迈 ============ -->
+  <section class="slide">
+    <div class="bookmark reveal">跑步</div>
+    <div class="case-head reveal">
+      <div class="case-tag">参数驱动型 · 案例 02</div>
+      <div class="case-title">必迈：定向招募运动达人<br><b>硬核评测</b> 与推荐</div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>结案数据 / 内容示意图 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">16</div>
+  </section>
+
+  <!-- ============ 17. Slide13 装备升级型-人群 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;top:100px">OUTDOOR</div>
+    <div class="pad">
+      <div class="kicker green reveal">装备升级型 · 硬核户外</div>
+      <h2 class="h2 reveal d1">高客单 · 重决策 · <em>"不敢盲目买"</em></h2>
+      <div class="sub reveal d2">露营、徒步、越野、滑雪 —— 选错成本高，需要专业背书和信任。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(4,1fr);margin-top:56px;gap:22px">
+        <div class="card"><h4><span class="dot"></span>高客单</h4><p>单件动辄数千元。</p></div>
+        <div class="card"><h4><span class="dot"></span>重决策</h4><p>反复查证才敢下单。</p></div>
+        <div class="card"><h4><span class="dot"></span>不敢盲目买</h4><p>新手入门门槛高。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>选错成本大</h4><p>需要专业背书降低顾虑。</p></div>
+      </div>
+    </div>
+    <div class="pageno">17</div>
+  </section>
+
+  <!-- ============ 18. Slide14 装备升级型-解法 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker green reveal">值得买解法</div>
+      <h2 class="h2 reveal d1">IP 造浪 × <em>行家领路</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr 1fr;margin-top:48px;gap:26px">
+        <div class="card"><h4><span class="dot"></span>兴趣 IP 深度植入</h4><p>场景激发购买欲，把装备放进真实使用场景。</p></div>
+        <div class="card"><h4><span class="dot"></span>5 个标杆兴趣（含徒步）</h4><p>专业编辑+玩家领路，解读装备科技，建立"专业"认知。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>大促场景攻略</h4><p>开板季/徒步季<span class="hi">一站式装备清单</span>，降低新手决策负担。</p></div>
+      </div>
+      <div class="imgstrip reveal d3" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="imgslot"><div class="ic">🏔️</div><span>兴趣 IP 示意</span><small>场景激发购买</small></div>
+        <div class="imgslot"><div class="ic">🧭</div><span>专业攻略示意</span><small>玩家领路图文</small></div>
+        <div class="imgslot"><div class="ic">🎒</div><span>装备清单示意</span><small>大促一站式清单</small></div>
+      </div>
+    </div>
+    <div class="pageno">18</div>
+  </section>
+
+  <!-- ============ 19. 案例·迪卡侬 ============ -->
+  <section class="slide">
+    <div class="bookmark reveal" style="font-size:34px">轻户外</div>
+    <div class="case-head reveal">
+      <div class="case-tag">装备升级型 · 案例 03</div>
+      <div class="case-title">迪卡侬：借户外/骑行热度<br>构筑品牌<b>自有阵地</b></div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>搜索拦截 + 品牌专区 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">19</div>
+  </section>
+
+  <!-- ============ 20. 案例·NIKE ============ -->
+  <section class="slide">
+    <div class="bookmark reveal" style="font-size:40px">户外</div>
+    <div class="case-head reveal">
+      <div class="case-tag">装备升级型 · 案例 04</div>
+      <div class="case-title">NIKE：专业玩家领路<br>打造 ACG 新品<b>装备攻略</b></div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>实测家漫谈 IP · 达人图文 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">20</div>
+  </section>
+
+  <!-- ============ 21. 案例·HOKA ============ -->
+  <section class="slide">
+    <div class="bookmark reveal" style="font-size:44px">徒步</div>
+    <div class="case-head reveal">
+      <div class="case-tag">装备升级型 · 案例 05</div>
+      <div class="case-title">HOKA：聚焦徒步场景<br>大促期间<b>爆款聚合推荐</b></div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>好物推荐 + 爆款清单 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">21</div>
+  </section>
+
+  <!-- ============ 22. Slide18 兴趣破圈型 ============ -->
+  <section class="slide">
+    <div class="wmk" style="left:-10px;top:80px">CROSSOVER</div>
+    <div class="pad">
+      <div class="kicker green reveal">兴趣破圈型 · 新兴运动</div>
+      <h2 class="h2 reveal d1">全链路<em>从零到一</em></h2>
+      <div class="sub reveal d2">路亚、攀岩、飞盘 —— 从"听说好玩"到"真的入坑"，缺一个靠谱领路人。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(3,1fr);margin-top:44px;gap:24px">
+        <div class="card"><h4><span class="dot"></span>入门攻略</h4><p>"零基础入门"系列（"路亚第一根竿怎么选"），填补认知空白。</p></div>
+        <div class="card"><h4><span class="dot"></span>兴趣圈层裂变</h4><p>站内兴趣圈子，"刚入坑"带动"想入坑"。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>节点爆发</h4><p>开渔季（路亚）集中资源打爆，建立"值得买=品类权威"。</p></div>
+      </div>
+      <div class="card reveal d4" style="margin-top:26px;background:rgba(47,232,107,.08);border-color:rgba(47,232,107,.4)"><p style="color:#dfe;font-size:26px;font-style:italic">"该模式为 2026 年重点布局赛道。已储备完整的'零基础入门攻略 + 圈子裂变'方案，期待与先行品牌共同定义这个品类。"</p></div>
+    </div>
+    <div class="pageno">22</div>
+  </section>
+
+  <!-- ============ 23. Slide19 生活方式型 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;top:100px">CYCLING</div>
+    <div class="pad">
+      <div class="kicker green reveal">生活方式型 · 两轮出行</div>
+      <h2 class="h2 reveal d1">体验<em>即转化</em></h2>
+      <div class="sub reveal d2">折叠车、公路车、E-bike、通勤电动车 —— 买的不是交通工具，是一种生活选择（¥1000-30000，决策周期长）。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(3,1fr);margin-top:44px;gap:24px">
+        <div class="card"><h4><span class="dot"></span>评测体系升级</h4><p>专业测评框架覆盖全价位。</p></div>
+        <div class="card"><h4><span class="dot"></span>全链路内容</h4><p>开箱评测 → 改装日记 → 通勤穿搭，"买车"="进入一种生活"。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>精准召回</h4><p>以旧换新/国补政策解读，"换车"决策成本更低。</p></div>
+      </div>
+      <div class="imgstrip reveal d4" style="grid-template-columns:1fr 1fr">
+        <div class="imgslot"><div class="ic">🚲</div><span>图片位 · 评测体系示意</span><small>专业测评框架截图</small></div>
+        <div class="imgslot"><div class="ic">🔋</div><span>图片位 · 国补/以旧换新</span><small>政策解读页截图</small></div>
+      </div>
+    </div>
+    <div class="pageno">23</div>
+  </section>
+
+  <!-- ============ 24. 案例·九号 ============ -->
+  <section class="slide">
+    <div class="bookmark reveal" style="font-size:44px">骑行</div>
+    <div class="case-head reveal">
+      <div class="case-tag">生活方式型 · 案例 06</div>
+      <div class="case-title">九号：优惠预约 + 引导门店自提<br><b>降低选购门槛</b></div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>优惠日历 + 必看促销 + 附近门店自提 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">24</div>
+  </section>
+
+  <!-- ============ 25. 案例·雅迪 ============ -->
+  <section class="slide">
+    <div class="bookmark reveal" style="font-size:44px">出行</div>
+    <div class="case-head reveal">
+      <div class="case-tag">生活方式型 · 案例 07</div>
+      <div class="case-title">雅迪：购后晒物 + 国补激励 + 官方榜单<br><b>三方合力缩短决策</b></div>
+    </div>
+    <div class="case-body">
+      <div class="ph-box reveal d1"><div class="ic">🖼️</div><div class="tx">【 此处待补充案例截图 】<small>晒物赏金 + 国补植入 + 值榜单 · 由您填充</small></div></div>
+      <div class="case-right">
+        <div class="slot reveal d2"><h4>核心打法</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d3"><h4>关键数据</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+        <div class="slot reveal d4"><h4>成果亮点</h4><p>【内容待补充】</p><span class="pill o">待填充</span></div>
+      </div>
+    </div>
+    <div class="pageno">25</div>
+  </section>
+
+  <!-- ============ 26. 章节页④ ============ -->
+  <section class="slide section">
+    <div class="sbg" style="background-image:url('https://images.unsplash.com/photo-1486218119243-13883505764c?w=1600&q=80')"></div>
+    <div class="veil"></div>
+    <div class="sec-inner">
+      <div class="sec-no reveal">04</div>
+      <div class="sec-title reveal d1">不仅是销售<br>更是<em>品牌资产的沉淀</em></div>
+      <div class="sec-desc reveal d2">当下转化效率（守正）：四种决策模式 → 让用户在决策那一刻选择你。<br>未来决策入口（出奇）：品牌事实百科 + AIGC 内容 → 让用户做功课时第一时间找到你。</div>
+    </div>
+    <div class="pageno">26</div>
+  </section>
+
+  <!-- ============ 27. Slide22 面向AI的品牌心智资产 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">构建面向 AI 的品牌心智资产</div>
+      <h2 class="h2 reveal d1" style="font-size:60px">让 AI 准确介绍你，<em>持续推荐你</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr;margin-top:52px;gap:34px">
+        <div class="card blue"><h4><span class="dot"></span>一、让 AI 准确介绍你</h4><p><span class="hi">品牌事实百科</span> —— 品牌方定义的、面向 AI 的"官方事实源"。</p></div>
+        <div class="card" style="background:rgba(47,232,107,.08);border-color:rgba(47,232,107,.4)"><h4><span class="dot"></span>二、让 AI 持续推荐你</h4><p><span class="hi">AIGC 消费内容</span> —— 持续产出 AI 友好内容，覆盖长尾场景。</p></div>
+      </div>
+      <div class="quote-line reveal d3" style="margin-top:44px"><div style="color:#fff;font-size:32px;font-weight:700">两者协同 = 面向 AI 时代的品牌建设完整解法</div></div>
+    </div>
+    <div class="pageno">27</div>
+  </section>
+
+  <!-- ============ 28. Slide23 品牌事实百科-问题解法 ============ -->
+  <section class="slide">
+    <div class="wmk" style="right:0;bottom:-30px">FACTS</div>
+    <div class="pad">
+      <div class="kicker reveal">品牌事实百科</div>
+      <h2 class="h2 reveal d1">AI 时代品牌的<em>"官方事实源"</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:1fr 1fr;margin-top:52px;gap:34px">
+        <div class="card"><h4><span class="dot"></span>问题</h4><p>用户问 AI"XX 品牌怎么样"，答案往往<span style="color:#ff9">零散、不准、有偏差</span>。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>解法</h4><p>品牌事实百科 = 品牌方<span class="hi">定义的、面向 AI 的"官方事实源"</span>。</p></div>
+      </div>
+    </div>
+    <div class="pageno">28</div>
+  </section>
+
+  <!-- ============ 29. Slide24 品牌事实百科-六大模块 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">品牌事实百科 · 六大模块</div>
+      <h2 class="h2 reveal d1" style="font-size:60px">结构化的品牌<em>官方事实体系</em></h2>
+      <div class="grid reveal d2" style="grid-template-columns:repeat(3,1fr);margin-top:52px;gap:24px">
+        <div class="card"><h4><span class="dot"></span>概览</h4><p>品牌一句话定位与核心信息。</p></div>
+        <div class="card"><h4><span class="dot"></span>品牌介绍</h4><p>历史、渠道、产品线。</p></div>
+        <div class="card"><h4><span class="dot"></span>品牌动态</h4><p>最新活动与官方发声。</p></div>
+        <div class="card"><h4><span class="dot"></span>品牌内容</h4><p>优质图文/视频合集。</p></div>
+        <div class="card"><h4><span class="dot"></span>品牌商品</h4><p>主推新品与重点产品。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>用户评价 / 常见问题</h4><p>真实口碑 + FAQ 结构化沉淀。</p></div>
+      </div>
+    </div>
+    <div class="pageno">29</div>
+  </section>
+
+  <!-- ============ 30. Slide25 AIGC消费内容 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">AIGC 消费内容</div>
+      <h2 class="h2 reveal d1">三层内容体系 <em>= 喂饱 AI</em></h2>
+      <div class="sub reveal d2">AI 偏好：高信息密度、可结构化的内容。</div>
+      <div class="grid reveal d3" style="grid-template-columns:repeat(3,1fr);margin-top:52px;gap:26px">
+        <div class="card"><h4><span class="dot"></span>官方内容</h4><p>品牌自己怎么说。</p></div>
+        <div class="card"><h4><span class="dot"></span>全网内容</h4><p>KOL / KOC / UGC 怎么评价。</p></div>
+        <div class="card blue"><h4><span class="dot"></span>精选内容</h4><p>AIGC 二次创作的<span class="hi">高密度内容</span>。</p></div>
+      </div>
+      <div class="imgstrip reveal d4" style="grid-template-columns:1fr">
+        <div class="imgslot" style="min-height:180px"><div class="ic">🤖</div><span>图片位 · 三层内容体系图</span><small>官方 / 全网 / 精选 内容组合示意 · 由您填充</small></div>
+      </div>
+    </div>
+    <div class="pageno">30</div>
+  </section>
+
+  <!-- ============ 31. Slide26 五步闭环 ============ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kicker reveal">面向大模型的营销闭环</div>
+      <h2 class="h2 reveal d1" style="font-size:60px">看清 → 布局 → 沉淀 → <em>看住</em></h2>
+      <div class="flow reveal d2" style="margin-top:80px">
+        <div class="flow-step on"><div class="n">①</div><h5>看清用户意图</h5><p>洞察真实搜索与需求</p></div>
+        <div class="flow-step"><div class="n">②</div><h5>分析 AI 现状</h5><p>AI 当前怎么说你</p></div>
+        <div class="flow-step"><div class="n">③</div><h5>布局内容缺口</h5><p>补齐 AI 友好内容</p></div>
+        <div class="flow-step"><div class="n">④</div><h5>沉淀品牌资产</h5><p>事实百科 + AIGC</p></div>
+        <div class="flow-step on"><div class="n">⑤</div><h5>持续监测优化</h5><p>迭代守住心智</p></div>
+      </div>
+    </div>
+    <div class="pageno">31</div>
+  </section>
+
+  <!-- ============ 32. Slide27 合作模式矩阵 ============ -->
+  <section class="slide">
+    <div class="deco-dots"></div>
+    <div class="pad" style="top:56px;bottom:56px">
+      <div class="kicker reveal">合作模式矩阵一览</div>
+      <h2 class="h2 reveal d1" style="font-size:56px;margin:18px 0 26px">所有品牌的<em>合作需求与解法</em></h2>
+      <table class="tbl reveal d2" style="font-size:25px">
+        <thead><tr><th style="width:200px">需求类型</th><th>推荐打法</th><th>核心产品</th></tr></thead>
+        <tbody>
+          <tr><td class="cat">日常运营</td><td>官方种草背书 + "达人矩阵"铺量 + 用户活动口碑积累</td><td>PUGC消费内容 / 众测 / 晒单征稿 / 达人推推团 / 品牌专区</td></tr>
+          <tr><td class="cat">节点爆发</td><td>IP造势 + 好价内容 + 大促专题植入 + 搜索拦截</td><td>IP营销 / 大促专题 / 好价速递 / 搜索产品</td></tr>
+          <tr><td class="cat">新品引爆</td><td>"众测"首发 + 新品频道种草 + 硬广曝光</td><td>众测 / 新品资源 / 硬广</td></tr>
+          <tr><td class="cat">AI心智抢占</td><td>品牌洞察 + "AIGC内容"铺量 + 品牌事实百科搭建</td><td>品牌事实百科 / AIGC</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pageno">32</div>
+  </section>
+
+  <!-- ============ 33. 尾页 ============ -->
+  <section class="slide cover">
+    <div class="cover-photos"><div class="ph l"></div><div class="ph r"></div></div>
+    <div class="band top"><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span></div>
+    <div class="band bot"><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span><span>SMZDM</span></div>
+    <div class="cover-mid">
+      <div class="yr reveal">2026 · 什么值得买</div>
+      <div class="cover-title reveal d1"><h1>感谢观看</h1></div>
+      <div class="cover-slab reveal d2"><span>运动户外行业营销解决方案</span></div>
+      <div class="cover-org reveal d3">什么值得买 · 商业化中心</div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<div class="nav"><button onclick="go(-1)" aria-label="上一页">‹</button><span id="pg">1 / 33</span><button onclick="go(1)" aria-label="下一页">›</button></div>
+
+<script>
+/* ===== 舞台缩放 ===== */
+const stage=document.getElementById('stage'),slides=[...document.querySelectorAll('.slide')];let cur=0;
+function scale(){const f=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(${(innerWidth-1920*f)/2}px,${(innerHeight-1080*f)/2}px) scale(${f})`}
+addEventListener('resize',scale);scale();
+/* ===== 翻页 ===== */
+function show(i){cur=(i+slides.length)%slides.length;slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  document.getElementById('pg').textContent=(cur+1)+' / '+slides.length;
+  document.getElementById('prog').style.width=((cur+1)/slides.length*100)+'%';
+  const dm=slides[cur].querySelectorAll('.num[data-c]');if(dm.length)countUp(dm);}
+function go(d){show(cur+d)}
+addEventListener('keydown',e=>{if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();go(1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1)}});
+/* 触摸滑动 */
+let tx=0;addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)go(dx<0?1:-1)},{passive:true});
+/* 数字滚动 */
+function countUp(els){els.forEach(el=>{const t=+el.dataset.c,suf=el.dataset.suf||'',dur=1100,st=performance.now();
+  function fr(n){const p=Math.min((n-st)/dur,1),v=Math.round(t*(1-Math.pow(1-p,3)));el.textContent=v.toLocaleString()+suf;if(p<1)requestAnimationFrame(fr)}requestAnimationFrame(fr)})}
+show(0);
+</script>
 </body>
+</html>
