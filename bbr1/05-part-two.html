@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P5 · 章节过渡 - Part Two</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .left {
+    padding: 0 110px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 28px;
+  }
+  .part-line { display: flex; align-items: center; gap: 16px; }
+  .part-en { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--gold); font-style: italic; letter-spacing: 0.08em; }
+  .part-num { font-family: 'Playfair Display', serif; font-size: 88px; color: var(--gold); line-height: 1; }
+  .title-cn { font-family: 'Noto Serif SC', serif; font-size: 72px; color: var(--brown-dark); font-weight: 700; line-height: 1.1; letter-spacing: 0.04em; }
+  .title-en { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--text-body); letter-spacing: 0.36em; text-transform: uppercase; opacity: 0.7; }
+  .divider { width: 64px; height: 1px; background: var(--gold); }
+
+  .quote-block { position: relative; padding-left: 36px; }
+  .quote-block::before {
+    content: """; position: absolute; left: -8px; top: -36px;
+    font-family: 'Playfair Display', serif; font-size: 130px; color: var(--gold);
+    line-height: 1;
+  }
+  .quote-block .q {
+    font-family: 'Noto Serif SC', serif; font-style: italic;
+    font-size: 26px; color: var(--brown-dark); line-height: 1.6; font-weight: 500;
+  }
+
+  .tag-bottom {
+    position: absolute; right: 110px; bottom: 110px;
+    padding: 8px 18px; border-radius: 100px;
+    background: var(--brown-dark); color: var(--cream);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 12px; letter-spacing: 0.16em;
+  }
+
+  .right { position: relative; overflow: hidden; }
+  .right img { width: 100%; height: 100%; object-fit: cover; }
+  .right::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(270deg, rgba(245,239,230,0) 65%, var(--cream) 100%);
+  }
+  .dots { position: absolute; left: 110px; top: 110px; display: flex; gap: 10px; z-index: 3; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brown-dark); }
+  .dot.camel { background: var(--camel); }
+  .dot.cream { background: var(--cream); border: 1px solid var(--gold); }
+  .burb-texture {
+    position: absolute; right: 30px; top: 50%; transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 90px; color: var(--gold); opacity: 0.05;
+    letter-spacing: 0.08em; z-index: 1; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="burb-texture">BURBERRY · BURBERRY · BURBERRY</div>
+  <div class="layout">
+    <div class="left">
+      <div class="dots"><div class="dot"></div><div class="dot camel"></div><div class="dot cream"></div></div>
+      <div class="part-line">
+        <div class="part-num">02</div>
+        <div class="part-en">Part Two</div>
+      </div>
+      <div class="title-cn">核心策略</div>
+      <div class="title-en">CORE STRATEGY</div>
+      <div class="divider"></div>
+      <div class="quote-block">
+        <div class="q">把品牌"调性"<br>翻译成用户"购买理由"</div>
+      </div>
+      <div class="tag-bottom">价值翻译官</div>
+    </div>
+    <div class="right">
+      <img src="../assets/img/model-polo.jpg" alt="Burberry Menswear">
+    </div>
+  </div>
+</section>
+</body>
+</html>

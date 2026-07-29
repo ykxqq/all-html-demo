@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P7 · 人群锚定</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .layout { display: grid; grid-template-columns: 1.4fr 1fr; height: 100%; }
+  .left { padding: 130px 60px 100px 120px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  .eyebrow { display: flex; align-items: center; gap: 14px; font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.34em; text-transform: uppercase; }
+  .eyebrow .num { font-size: 22px; color: var(--gold); }
+  .eyebrow .bar { width: 36px; height: 1px; background: var(--gold); }
+  .title-cn { font-family: 'Noto Serif SC', serif; font-size: 44px; color: var(--brown-dark); font-weight: 700; line-height: 1.18; }
+  .title-en { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--camel); letter-spacing: 0.32em; text-transform: uppercase; margin-top: -4px; }
+
+  .stat-block { display: flex; align-items: baseline; gap: 18px; padding: 24px 0; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 160px; color: var(--gold); line-height: 0.9; font-weight: 500; letter-spacing: -0.04em; }
+  .stat-pct { font-family: 'Playfair Display', serif; font-size: 64px; color: var(--camel); }
+  .stat-cap { font-family: 'Noto Sans SC', sans-serif; font-size: 14px; color: var(--text-body); line-height: 1.7; max-width: 280px; margin-left: auto; }
+
+  .core-point { font-family: 'Noto Sans SC', sans-serif; font-size: 16px; color: var(--text-body); line-height: 1.9; }
+  .core-point strong { color: var(--brown-dark); }
+
+  .sub-h { font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--brown-dark); font-weight: 700; display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .sub-h::before { content: ""; width: 24px; height: 1px; background: var(--gold); }
+  .bullets { display: flex; flex-direction: column; gap: 8px; padding-left: 0; }
+  .bullets li { list-style: none; font-family: 'Noto Sans SC', sans-serif; font-size: 15px; color: var(--text-body); line-height: 1.7; display: flex; gap: 12px; }
+  .bullets li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-top: 10px; flex-shrink: 0; }
+
+  .right { padding: 130px 100px 100px 30px; display: flex; flex-direction: column; gap: 26px; justify-content: center; }
+  .img-frame { aspect-ratio: 1/1; }
+  .img-frame img { object-fit: cover; }
+  .img-label { display: flex; align-items: center; gap: 12px; font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--text-body); letter-spacing: 0.28em; text-transform: uppercase; padding-left: 6px; }
+  .img-label .num { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="top-nav">
+    <div class="brand-mark">BURBERRY</div>
+    <div class="nav-links"><span>HOME</span><span>CASE</span><span class="active">STRATEGY</span><span>VALUE</span><span>ABOUT</span></div>
+  </div>
+
+  <div class="layout">
+    <div class="left">
+      <div>
+        <div class="eyebrow"><span class="num">01</span><span class="bar"></span><span>AUDIENCE TARGETING</span></div>
+        <div class="title-cn" style="margin-top:12px;">人群锚定</div>
+        <div class="title-en">SMZDM × BURBERRY TARGET OVERLAP</div>
+      </div>
+
+      <div class="core-point">什么值得买核心客群与 Burberry 目标客群<strong>高度契合</strong>，精准的人群匹配是这次 618 合作的第一块基石。</div>
+
+      <div class="stat-block">
+        <div style="display:flex;align-items:baseline;">
+          <span class="stat-num">75</span><span class="stat-pct">%</span>
+        </div>
+        <div class="stat-cap">是什么值得买 30-45 岁一二线高消费男性用户占比</div>
+      </div>
+
+      <div>
+        <div class="sub-h">货盘选择</div>
+        <ul class="bullets">
+          <li>男装为核心、女包与女装为辅</li>
+          <li>T 恤 + POLO 衫双品类组合（GMV 贡献与用户主动搜索量均位居前列）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="img-frame">
+        <img src="../assets/img/polo-shirt.jpg" alt="Polo Shirt">
+      </div>
+      <div class="img-label"><span class="num">01</span><span>MEN'S POLO</span></div>
+
+      <div class="img-frame">
+        <img src="../assets/img/tote-bag.jpg" alt="Tote Bag">
+      </div>
+      <div class="img-label"><span class="num">02</span><span>CHECK TOTE BAG</span></div>
+    </div>
+  </div>
+
+  <div class="foot-deco">
+    <div class="page-num">07 / 18</div>
+    <div class="line"></div>
+    <div class="label">SMZDM × BURBERRY · 618</div>
+  </div>
+</section>
+</body>
+</html>

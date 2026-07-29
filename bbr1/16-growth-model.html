@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P16 · 可复制的奢品增长模型</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .slide { background: var(--brown-dark); }
+  .check-pattern {
+    position: absolute; inset: 0; opacity: 0.04; pointer-events: none; z-index: 1;
+    background-image:
+      linear-gradient(45deg, var(--gold) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--gold) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--gold) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--gold) 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 0 30px, 30px -30px, 30px 0;
+  }
+  .wrap { padding: 90px 120px 80px; height: 100%; display: flex; flex-direction: column; position: relative; z-index: 2; }
+  .header { text-align: center; margin-bottom: 30px; }
+  .eyebrow { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.36em; text-transform: uppercase; }
+  .title-cn { font-family: 'Noto Serif SC', serif; font-size: 38px; color: var(--cream); font-weight: 700; margin-top: 10px; }
+  .title-en { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.32em; text-transform: uppercase; margin-top: 4px; }
+
+  .formula {
+    margin: 18px auto 30px; padding: 18px 36px; border: 1px solid var(--gold); border-radius: 4px;
+    display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
+    font-family: 'Noto Serif SC', serif; font-size: 22px; color: var(--cream);
+  }
+  .formula .op { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 26px; }
+
+  .formula-cap { text-align: center; font-family: 'Montserrat', sans-serif; font-size: 12px; color: var(--camel); letter-spacing: 0.32em; text-transform: uppercase; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; flex: 1; padding: 0 16px; }
+  .card {
+    background: var(--cream); border-radius: 16px; padding: 30px 30px 28px;
+    display: flex; flex-direction: column; gap: 14px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+  }
+  .icon-circle {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--gold);
+    color: var(--white); display: flex; align-items: center; justify-content: center;
+  }
+  .icon-circle svg { width: 28px; height: 28px; }
+  .card-h { font-family: 'Noto Serif SC', serif; font-size: 22px; color: var(--brown-dark); font-weight: 700; }
+  .card-p { font-family: 'Noto Sans SC', sans-serif; font-size: 13.5px; color: var(--text-body); line-height: 1.85; }
+  .card-p strong { color: var(--brown-dark); }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="check-pattern"></div>
+  <div class="top-nav">
+    <div class="brand-mark">BURBERRY</div>
+    <div class="nav-links"><span>HOME</span><span>CASE</span><span>STRATEGY</span><span class="active">VALUE</span><span>ABOUT</span></div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div class="eyebrow">REPLICABLE GROWTH MODEL</div>
+      <div class="title-cn">可复制的奢品增长模型</div>
+      <div style="margin-top:14px;">
+        <div class="formula">
+          <span>奢侈品非优势季节增长</span>
+          <span class="op">=</span>
+          <span>精准人群</span>
+          <span class="op">×</span>
+          <span>价值翻译</span>
+          <span class="op">×</span>
+          <span>全链路闭环</span>
+        </div>
+      </div>
+      <div class="formula-cap">A REPLICABLE PARADIGM FOR LUXURY GROWTH</div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.4 7-6.4s7 2.8 7 6.4"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/></svg>
+        </div>
+        <div class="card-h">精准人群</div>
+        <div class="card-p">平台 30-45 岁一二线城市男性为主力的人群结构，与 Burberry 目标客群<strong>高度契合</strong>，无需泛流量堆砌即可精准触达——证明<strong>"对的人在对的平台"</strong>是奢品运营的核心前提。</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 7h10M5 12h10M5 17h6"/><path d="M17 14l3 3-3 3"/></svg>
+        </div>
+        <div class="card-h">价值翻译</div>
+        <div class="card-p">我们不仅具备将奢品产品力<strong>"翻译"</strong>为用户语言的能力，更能通过专业内容补齐品牌详情页的信息空白，在品牌溢价与产品价值之间建立<strong>可信的认知桥梁</strong>。</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 0 1 13.5-5.7L20 4M20 12a8 8 0 0 1-13.5 5.7L4 20"/><path d="M16 4h4v4M4 20h4v-4"/></svg>
+        </div>
+        <div class="card-h">全链路闭环</div>
+        <div class="card-p">从公域资源位曝光到私域社群精准收割，平台具备完整的<strong>"曝光-种草-催化-转化"</strong>闭环能力，且每个环节都有<strong>可量化的运营动作支撑</strong>。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-deco">
+    <div class="page-num">16 / 18</div>
+    <div class="line"></div>
+    <div class="label">SMZDM × BURBERRY · 618</div>
+  </div>
+</section>
+</body>
+</html>

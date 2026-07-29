@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P17 · 行业价值</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .wrap { padding: 120px 120px 90px; height: 100%; display: flex; flex-direction: column; }
+  .header { text-align: center; margin-bottom: 56px; }
+  .eyebrow { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.36em; text-transform: uppercase; }
+  .title-cn { font-family: 'Noto Serif SC', serif; font-size: 52px; color: var(--brown-dark); font-weight: 700; margin-top: 10px; }
+  .title-en { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--camel); letter-spacing: 0.32em; text-transform: uppercase; margin-top: 6px; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; flex: 1; padding: 0 30px; align-items: stretch; }
+  .v-card { background: var(--white); border-radius: 18px; padding: 44px 40px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 16px 36px rgba(61,43,31,0.07); position: relative; overflow: hidden; }
+  .v-card .num-bg { position: absolute; right: -30px; top: -50px; font-family: 'Playfair Display', serif; font-size: 260px; color: var(--gold); opacity: 0.16; line-height: 1; pointer-events: none; font-weight: 500; }
+  .v-card .num-tag { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.32em; }
+  .v-card .h { font-family: 'Noto Serif SC', serif; font-size: 28px; color: var(--brown-dark); font-weight: 700; line-height: 1.3; }
+  .v-card .p { font-family: 'Noto Sans SC', sans-serif; font-size: 15px; color: var(--text-body); line-height: 1.9; }
+  .v-card .p strong { color: var(--brown-dark); }
+
+  .bottom-strip { margin-top: 30px; text-align: center; }
+  .gold-line-grad {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+    margin: 0 auto 16px; max-width: 800px;
+  }
+  .summary-text { font-family: 'Noto Serif SC', serif; font-size: 16px; color: var(--gold); letter-spacing: 0.16em; }
+  .check-deco { margin-top: 12px; display: flex; justify-content: center; gap: 4px; }
+  .check-deco span { display: inline-block; width: 18px; height: 18px; background:
+    linear-gradient(45deg, var(--camel) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--camel) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--camel) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--camel) 75%);
+    background-size: 18px 18px;
+    background-position: 0 0, 0 9px, 9px -9px, 9px 0;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="top-nav">
+    <div class="brand-mark">BURBERRY</div>
+    <div class="nav-links"><span>HOME</span><span>CASE</span><span>STRATEGY</span><span class="active">VALUE</span><span>ABOUT</span></div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div class="eyebrow">INDUSTRY VALUE</div>
+      <div class="title-cn">行业价值</div>
+      <div class="title-en">A NEW STANDARD FOR LUXURY E-COMMERCE</div>
+    </div>
+
+    <div class="row">
+      <div class="v-card">
+        <div class="num-bg">01</div>
+        <div class="num-tag">VALUE · 01</div>
+        <div class="h">重构奢品<br>季节运营逻辑</div>
+        <div class="p">验证夏季运营可行性，<strong>打破奢侈品只有秋冬旺季</strong>的固有认知，开辟非优势季节增长新路径。</div>
+      </div>
+      <div class="v-card">
+        <div class="num-bg">02</div>
+        <div class="num-tag">VALUE · 02</div>
+        <div class="h">平台奢侈品<br>招商核心标杆</div>
+        <div class="p">可复制至<strong>全品类 / 全品牌</strong>，为平台后续奢侈品招商提供成功案例与<strong>标准化运营模型</strong>。</div>
+      </div>
+    </div>
+
+    <div class="bottom-strip">
+      <div class="gold-line-grad"></div>
+      <div class="summary-text">— 从单次合作到行业范式 · 定义奢品平台运营新标准 —</div>
+      <div class="check-deco">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-deco">
+    <div class="page-num">17 / 18</div>
+    <div class="line"></div>
+    <div class="label">SMZDM × BURBERRY · 618</div>
+  </div>
+</section>
+</body>
+</html>

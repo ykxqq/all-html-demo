@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P3 · 章节过渡 - Part One</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .left {
+    position: relative; overflow: hidden;
+  }
+  .left img { width: 100%; height: 100%; object-fit: cover; }
+  .left::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(245,239,230,0) 65%, var(--cream) 100%);
+  }
+
+  .right {
+    padding: 0 110px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 28px;
+  }
+  .part-line { display: flex; align-items: center; gap: 16px; }
+  .part-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; color: var(--gold); font-style: italic; letter-spacing: 0.08em;
+  }
+  .part-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 88px; color: var(--gold); font-weight: 400; line-height: 1;
+  }
+  .title-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 72px; color: var(--brown-dark); font-weight: 700;
+    line-height: 1.1; letter-spacing: 0.04em;
+  }
+  .title-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: var(--text-body); letter-spacing: 0.36em;
+    text-transform: uppercase; opacity: 0.7;
+  }
+  .divider { width: 64px; height: 1px; background: var(--gold); }
+  .desc { font-family: 'Noto Sans SC', sans-serif; font-size: 15px; color: var(--text-body); line-height: 1.85; max-width: 480px; }
+  .tags { display: flex; gap: 12px; }
+  .tag {
+    padding: 8px 18px; border-radius: 100px;
+    background: var(--brown-dark); color: var(--cream);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 12px;
+    letter-spacing: 0.16em;
+  }
+  .burb-texture {
+    position: absolute; left: 30px; top: 50%; transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 90px; color: var(--gold); opacity: 0.05;
+    letter-spacing: 0.08em; z-index: 1; pointer-events: none;
+  }
+  .dots {
+    position: absolute; left: 110px; top: 110px; display: flex; gap: 10px; z-index: 3;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brown-dark); }
+  .dot.camel { background: var(--camel); }
+  .dot.cream { background: var(--cream); border: 1px solid var(--gold); }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="burb-texture">BURBERRY · BURBERRY · BURBERRY</div>
+  <div class="layout">
+    <div class="left">
+      <img src="../assets/img/model-trench.jpg" alt="Burberry Trench">
+    </div>
+    <div class="right">
+      <div class="dots">
+        <div class="dot"></div><div class="dot camel"></div><div class="dot cream"></div>
+      </div>
+      <div class="part-line">
+        <div class="part-num">01</div>
+        <div>
+          <div class="part-en">Part One</div>
+        </div>
+      </div>
+      <div class="title-cn">品牌痛点</div>
+      <div class="title-en">BRAND PAIN POINT</div>
+      <div class="divider"></div>
+      <div class="desc">618 夏季大促与品牌核心爆款集中于秋冬的天然矛盾，让 Burberry 长期面临"季节空窗期"运营难题。</div>
+      <div class="tags">
+        <div class="tag">品牌定位</div>
+        <div class="tag">季节困境</div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

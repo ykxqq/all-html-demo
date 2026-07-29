@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P18 · 结尾页</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .slide { background: var(--brown-dark); }
+  .check-pattern {
+    position: absolute; right: -80px; bottom: -80px; width: 700px; height: 700px; opacity: 0.08; pointer-events: none; z-index: 1;
+    background-image:
+      linear-gradient(45deg, var(--gold) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--gold) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--gold) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--gold) 75%);
+    background-size: 80px 80px;
+    background-position: 0 0, 0 40px, 40px -40px, 40px 0;
+    transform: rotate(15deg);
+  }
+  .burb-texture {
+    position: absolute; left: -40px; top: 60px;
+    font-family: 'Playfair Display', serif;
+    font-size: 130px; color: var(--gold); opacity: 0.05;
+    letter-spacing: 0.08em; z-index: 1; pointer-events: none;
+  }
+
+  .center {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; text-align: center; padding: 0 200px;
+  }
+  .conclusion-label { font-family: 'Noto Serif SC', serif; font-size: 14px; color: var(--gold); letter-spacing: 0.42em; }
+  .main-line {
+    font-family: 'Noto Serif SC', serif; font-size: 30px; color: var(--cream); line-height: 1.7;
+    letter-spacing: 0.04em; max-width: 880px;
+  }
+  .main-line .gold { color: var(--gold); }
+  .deco-mid {
+    display: flex; align-items: center; gap: 18px; justify-content: center;
+  }
+  .deco-mid .line { width: 80px; height: 1px; background: var(--gold); }
+  .deco-mid .brand { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--gold); letter-spacing: 0.42em; font-weight: 600; }
+
+  .thank {
+    font-family: 'Playfair Display', serif; font-size: 130px; color: var(--cream);
+    letter-spacing: 0.16em; line-height: 1; font-weight: 500;
+  }
+  .thank .dot { color: var(--gold); }
+
+  .footer-info { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 8px; }
+  .footer-info .smzdm-line { font-family: 'Noto Sans SC', sans-serif; font-size: 14px; color: rgba(245,239,230,0.7); letter-spacing: 0.12em; }
+  .footer-info .meta { font-family: 'Montserrat', sans-serif; font-size: 11px; color: rgba(196,167,125,0.7); letter-spacing: 0.36em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="check-pattern"></div>
+  <div class="burb-texture">BURBERRY</div>
+
+  <div class="center">
+    <div class="conclusion-label">— 核 心 结 论 —</div>
+
+    <div class="main-line">
+      不止是一次成功的 <span class="gold">618 合作</span>，<br>
+      更是奢侈品行业 <span class="gold">全年增长</span> 的新解法
+    </div>
+
+    <div class="deco-mid">
+      <div class="line"></div>
+      <div class="brand">BURBERRY</div>
+      <div class="line"></div>
+    </div>
+
+    <div class="thank">THANK<span class="dot">·</span>YOU</div>
+
+    <div class="footer-info">
+      <div class="smzdm-line">什么值得买 × Burberry 618 合作案例</div>
+      <div class="meta">SMZDM × BURBERRY · 2026 / 06</div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

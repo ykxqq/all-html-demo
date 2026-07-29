@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P1 · 封面</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  /* P1 封面：深棕全屏底，左文右图 */
+  .slide { background: var(--brown-dark); }
+  .layout { display: grid; grid-template-columns: 1.15fr 1fr; height: 100%; }
+  .left {
+    position: relative;
+    padding: 120px 100px 120px 120px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    z-index: 2;
+  }
+  .burberry-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; letter-spacing: 0.4em; color: var(--gold); font-weight: 600;
+  }
+  .center-stack { display: flex; flex-direction: column; gap: 18px; }
+  .en-eyebrow {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; letter-spacing: 0.42em; color: var(--gold);
+    text-transform: uppercase; font-style: italic;
+  }
+  .main-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 64px; line-height: 1.18; color: var(--white);
+    font-weight: 700; letter-spacing: 0.02em;
+  }
+  .en-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--gold); letter-spacing: 0.32em;
+    text-transform: uppercase; margin-top: 6px;
+  }
+  .sub-line {
+    width: 56px; height: 1px; background: var(--gold); margin-top: 8px;
+  }
+  .sub-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 26px; color: var(--cream); line-height: 1.5; margin-top: 4px;
+  }
+  .bottom-block { display: flex; flex-direction: column; gap: 14px; }
+  .slogan {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px; color: rgba(196, 167, 125, 0.85);
+    letter-spacing: 0.18em; line-height: 1.8;
+  }
+  .slogan .sep { color: var(--gold); margin: 0 14px; }
+  .meta-row {
+    display: flex; gap: 28px; font-family: 'Montserrat', sans-serif;
+    font-size: 11px; color: rgba(245, 239, 230, 0.55);
+    letter-spacing: 0.32em; text-transform: uppercase; margin-top: 6px;
+  }
+
+  /* 右侧图片 */
+  .right {
+    position: relative;
+    overflow: hidden;
+  }
+  .right::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--brown-dark) 0%, rgba(61,43,31,0) 28%);
+    z-index: 2; pointer-events: none;
+  }
+  .right img {
+    width: 100%; height: 100%; object-fit: cover;
+    transform: scale(1.02);
+    filter: brightness(0.92) saturate(1.05);
+  }
+  .vline {
+    position: absolute; left: 80px; top: 120px; bottom: 120px;
+    width: 1px; background: var(--gold); opacity: 0.32; z-index: 3;
+  }
+  .issue-mark {
+    position: absolute; right: 60px; bottom: 50px; z-index: 4;
+    font-family: 'Playfair Display', serif;
+    color: var(--gold); font-size: 12px; letter-spacing: 0.32em;
+    writing-mode: vertical-rl; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="layout">
+    <div class="left">
+      <div class="burberry-mark">BURBERRY</div>
+
+      <div class="center-stack">
+        <div class="en-eyebrow">— A Case Study · 2026 —</div>
+        <div class="main-cn">破局奢侈品<br>夏季运营魔咒</div>
+        <div class="sub-line"></div>
+        <div class="sub-cn">什么值得买 × Burberry 618 合作案例</div>
+        <div class="en-main">BREAKING THE SUMMER CURSE</div>
+      </div>
+
+      <div class="bottom-block">
+        <div class="slogan">
+          首创非优势季节增长模型 <span class="sep">|</span>
+          从"季节空窗"到"全年增长"的奢品运营新范式
+        </div>
+        <div class="meta-row">
+          <span>SMZDM</span><span>·</span><span>BURBERRY</span><span>·</span><span>618 / 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <img src="../assets/img/trench-coat.jpg" alt="Burberry Trench Coat">
+      <div class="issue-mark">SUMMER ISSUE · 2026</div>
+    </div>
+  </div>
+  <div class="vline"></div>
+</section>
+</body>
+</html>

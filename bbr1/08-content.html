@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>P8 · 内容翻译</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .wrap { padding: 120px 120px 90px; height: 100%; display: flex; flex-direction: column; }
+  .header { text-align: center; margin-bottom: 36px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 14px; font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.36em; text-transform: uppercase; }
+  .eyebrow .num { font-size: 22px; }
+  .title-cn { font-family: 'Noto Serif SC', serif; font-size: 44px; color: var(--brown-dark); font-weight: 700; margin-top: 10px; }
+  .title-en { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--camel); letter-spacing: 0.32em; text-transform: uppercase; margin-top: 4px; }
+  .subtitle { font-family: 'Noto Sans SC', sans-serif; font-size: 15px; color: var(--text-body); margin-top: 10px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; flex: 1; padding: 0 20px; }
+  .col { display: flex; flex-direction: column; gap: 22px; }
+  .col-img { aspect-ratio: 16/9; border: 1px solid var(--gold); border-radius: 8px; overflow: hidden; }
+  .col-img img { width: 100%; height: 100%; object-fit: cover; }
+  .col-img-deco { width: 60px; height: 1px; background: var(--gold); margin: 6px auto 0; }
+
+  .col-h { font-family: 'Noto Serif SC', serif; font-size: 24px; color: var(--brown-dark); font-weight: 700; }
+  .col-h-en { font-family: 'Playfair Display', serif; font-size: 11px; color: var(--camel); letter-spacing: 0.32em; text-transform: uppercase; }
+  .bullets { display: flex; flex-direction: column; gap: 10px; }
+  .bullets li { list-style: none; font-family: 'Noto Sans SC', sans-serif; font-size: 15px; color: var(--text-body); line-height: 1.7; display: flex; gap: 12px; }
+  .bullets li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-top: 11px; flex-shrink: 0; }
+
+  .summary {
+    text-align: center; margin-top: 28px; padding-top: 22px;
+    border-top: 1px solid var(--gold); font-family: 'Noto Serif SC', serif;
+    font-size: 16px; color: var(--gold); letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="top-nav">
+    <div class="brand-mark">BURBERRY</div>
+    <div class="nav-links"><span>HOME</span><span>CASE</span><span class="active">STRATEGY</span><span>VALUE</span><span>ABOUT</span></div>
+  </div>
+
+  <div class="wrap">
+    <div class="header">
+      <div class="eyebrow"><span class="num">02</span><span>CONTENT TRANSLATION</span></div>
+      <div class="title-cn">内容翻译</div>
+      <div class="title-en">补齐品牌在调性之外较少提及的产品力信息</div>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+        <div class="col-img">
+          <img src="../assets/img/grey-tshirt.jpg" alt="T-Shirt">
+        </div>
+        <div class="col-img-deco"></div>
+        <div>
+          <div class="col-h">T 恤产品力</div>
+          <div class="col-h-en">T-SHIRT · PRODUCT FORTE</div>
+        </div>
+        <ul class="bullets">
+          <li>领口的<strong style="color:var(--brown-dark);">抗变形能力</strong></li>
+          <li>面料的体感——透气、不粘身、软硬适中</li>
+          <li>面料工艺、剪裁版型等"硬核产品信息"</li>
+        </ul>
+      </div>
+
+      <div class="col">
+        <div class="col-img">
+          <img src="../assets/img/check-polo.jpg" alt="Polo Shirt">
+        </div>
+        <div class="col-img-deco"></div>
+        <div>
+          <div class="col-h">POLO 衫产品力</div>
+          <div class="col-h-en">POLO · PRODUCT FORTE</div>
+        </div>
+        <ul class="bullets">
+          <li><strong style="color:var(--brown-dark);">珠地网眼布</strong>的透气原理</li>
+          <li><strong style="color:var(--brown-dark);">正肩修身</strong>的版型逻辑</li>
+          <li>一衣多穿的场景价值</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="summary">— 从"珠地网眼布"到"正肩修身" · 用用户语言翻译专业产品力 —</div>
+  </div>
+
+  <div class="foot-deco">
+    <div class="page-num">08 / 18</div>
+    <div class="line"></div>
+    <div class="label">SMZDM × BURBERRY · 618</div>
+  </div>
+</section>
+</body>
+</html>
