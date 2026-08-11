@@ -1,4 +1,351 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美妆个护行业与希思黎（Sisley）品牌营销分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1a1a1a; --sub:#666; --line:#e6e0d8; --paper:#fbf9f6;
+    --gold:#a8894f; --gold-soft:#d4b986; --rose:#8f3b52; --green:#3d6b52;
+    --card:#ffffff; --accent:#7a5c3e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    color:var(--ink); background:var(--paper); line-height:1.75; font-size:15px;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 22px 80px;}
+  header.cover{
+    background:linear-gradient(135deg,#1c1712 0%,#3a2c1d 55%,#5a4127 100%);
+    color:#f3ece0; padding:64px 40px 52px; border-radius:0 0 4px 4px;
+  }
+  header.cover .kicker{letter-spacing:.35em; font-size:12px; color:var(--gold-soft); text-transform:uppercase;}
+  header.cover h1{font-size:30px; margin:14px 0 8px; font-weight:600; line-height:1.4;}
+  header.cover .sub{color:#cdbfa8; font-size:15px;}
+  header.cover .meta{margin-top:26px; font-size:12.5px; color:#a89b82; display:flex; flex-wrap:wrap; gap:8px;}
+  header.cover .tag{border:1px solid rgba(212,185,134,.5); color:var(--gold-soft); padding:4px 12px; border-radius:20px; font-size:12px;}
+  h2{font-size:21px; margin:52px 0 6px; padding-bottom:10px; border-bottom:2px solid var(--gold); color:#2a2118;}
+  h2 .num{color:var(--gold); font-weight:700; margin-right:10px;}
+  h3{font-size:16.5px; color:var(--accent); margin:26px 0 8px;}
+  p{margin:9px 0;}
+  .lead{background:var(--card); border-left:4px solid var(--gold); padding:14px 18px; border-radius:0 6px 6px 0; box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .judge{background:#f4efe6; border:1px dashed var(--gold-soft); padding:12px 16px; border-radius:6px; margin:12px 0; font-size:14.5px;}
+  .judge b{color:var(--rose);}
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:13.5px; background:var(--card); box-shadow:0 1px 6px rgba(0,0,0,.05);}
+  th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top;}
+  th{background:#efe7da; color:#4a3a25; font-weight:600;}
+  tr:nth-child(even) td{background:#faf7f2;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px 18px; box-shadow:0 1px 5px rgba(0,0,0,.04);}
+  .card h4{margin:0 0 8px; font-size:15px; color:var(--accent);}
+  ul{margin:8px 0; padding-left:20px;} li{margin:5px 0;}
+  .chart-box{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:18px; margin:18px 0; box-shadow:0 1px 6px rgba(0,0,0,.05);}
+  .chart-title{font-size:14px; color:#4a3a25; font-weight:600; margin-bottom:6px;}
+  .chart-note{font-size:12px; color:var(--sub); margin-top:6px;}
+  .pill{display:inline-block; padding:2px 9px; border-radius:12px; font-size:12px; margin:2px;}
+  .p-str{background:#e3efe6; color:var(--green);} .p-weak{background:#f6e4e8; color:var(--rose);}
+  .callout{background:linear-gradient(90deg,#f7f1e6,#fbf9f6); border:1px solid var(--gold-soft); border-radius:8px; padding:16px 18px; margin:16px 0;}
+  .callout .t{font-weight:700; color:var(--accent); margin-bottom:4px;}
+  .src{font-size:12.5px; color:var(--sub);}
+  .src a{color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--gold-soft);}
+  .src li{margin:6px 0;}
+  .footnote{font-size:11.5px; color:#999; margin-top:4px;}
+  .grad-bar{height:8px; border-radius:4px; background:linear-gradient(90deg,var(--gold),var(--gold-soft),var(--rose));}
+  .disc{background:#fff8ec; border:1px solid #f0dcae; border-radius:6px; padding:10px 14px; font-size:12.5px; color:#7a5c2e; margin:14px 0;}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr;} header.cover{padding:44px 22px;} header.cover h1{font-size:23px;}}
+</style>
+</head>
 <body>
-<h1>这是demo1页面</h1>
+
+<header class="cover">
+  <div class="kicker">Marketing Insight Report · 营销策划前期洞察</div>
+  <h1>美妆个护行业 × 希思黎（Sisley）<br>品牌营销分析报告</h1>
+  <div class="sub">高端植萃护肤 · 中国市场 · 标准版 · 面向策划/提案团队</div>
+  <div class="meta">
+    <span class="tag">市场范围：中国</span>
+    <span class="tag">时间：近1–2年 + 未来6–12个月</span>
+    <span class="tag">深度：标准版</span>
+    <span class="tag">用途：策划前期洞察</span>
+    <span class="tag">日期：2026-07</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- 一 -->
+<h2><span class="num">一</span>策划结论摘要</h2>
+<div class="lead">
+一句话判断：<b>在"贵妇集体失速、价格体系崩塌"的高端护肤下行周期里，希思黎凭借家族独立、坚挺价盘和植萃专业性成为少数"没塌房"的品牌——它的问题不是活不下去，而是"太安全"：客群老化、年轻声量不足、新叙事缺位。下一步不是打折抢量，而是把"贵妇的专业"翻译成新一代高消费女性听得懂、愿意晒的语言。</b>
+</div>
+<table>
+<tr><th style="width:22%">维度</th><th>结论</th></tr>
+<tr><td>行业当前阶段</td><td>高端护肤 2025 年结构性回暖但"竞争逻辑重写"；消费者从"买贵"转向"买对/买少但买更好"，价格倒挂与直播折扣让传统贵妇品牌价盘承压。</td></tr>
+<tr><td>品牌当前位置</td><td>法国 d'Ornano 家族独立企业，"高科技植物精粹"高端护肤代表；全能乳液、全能乳液面霜、黑玫瑰系列、抗蔚蓝精华为核心资产；价盘坚挺、极少大促破价，在贵妇阵营中是"稳定的清流"。</td></tr>
+<tr><td>核心用户洞察</td><td>成熟高净值女性（35–55 岁）为基本盘，忠诚度高、复购稳；但增量人群（28–40 岁高消费、成分党、悦己型）对品牌"为什么值这个价"缺乏当代化认知。</td></tr>
+<tr><td>主要竞品打法</td><td>海蓝之谜（情绪+修护叙事）、莱珀妮（鱼子精华+奢华仪式）、赫莲娜（黑白绷带抗老+医研级科技）、娇兰帝皇蜂姿（蜂疗抗老+高端专柜体验）——普遍在"科技化叙事+直播放量+价格战"之间摇摆，部分因破价陷入舆论困局。</td></tr>
+<tr><td>品牌营销机会</td><td>①把"独立不打折"做成信任资产；②用"植物+科技"双证据链回应成分党；③以场景化内容（换季/熬夜急救/术后养肤/礼赠）激活年轻增量；④抖音兴趣电商与小红书专业种草的分工补课。</td></tr>
+<tr><td>下一步策划方向</td><td>「植萃硬科技」年轻化重述 + 「不破价的高级感」信任营销 + 明星单品场景化内容矩阵。</td></tr>
+</table>
+
+<!-- 二 -->
+<h2><span class="num">二</span>行业快速理解</h2>
+<h3>行业定义与品类结构</h3>
+<p>本报告聚焦<b>高端/超高端护肤（贵妇线）</b>细分，隶属美妆个护大盘；包含（面部护肤：精华、面霜、乳液、眼霜、面膜）与相关高端个护，<b>不含</b>大众平价护肤、彩妆、香水与纯功效械字号赛道（仅在竞争参照时提及）。</p>
+<div class="judge">对策划意味着：希思黎的战场是"高客单+强专业信任+强专柜体验"，内容不能对标平价功效党的"成分-价格-性价比"话术，要走"专业感+高级感+悦己"路线。</div>
+
+<h3>增长逻辑与消费趋势</h3>
+<ul>
+<li><b>结构性回暖但分化：</b>2025 年高端美妆市场"回暖"但"竞争逻辑重写"，头部国际大牌在 618 重回强势，而部分贵妇品牌因价格与舆论问题失速。<span class="footnote">来源：新华网、钛媒体、界面新闻（见文末）</span></li>
+<li><b>"买少但买更好"：</b>消费更理性——减少件数、提高单件品质与确定性，利好"少而精、护肤功效可感知"的高端品牌。</li>
+<li><b>抗老是最大金矿：</b>抗衰/抗皱精华霜是高端护肤增长最强赛道，科技叙事（成分、专利、临床）成为溢价核心。</li>
+<li><b>价格体系敏感化：</b>直播大促造成"价格倒挂/破价"，消费者对贵妇品牌"专柜价 vs 直播价"差异高度警觉，价盘稳定本身成为信任变量。</li>
+</ul>
+
+<h3>渠道与内容传播趋势</h3>
+<ul>
+<li><b>抖音成高端必争地：</b>国际高端美妆在抖音电商增速显著（部分报道超 60%），"高端美妆杀回抖音"成为趋势，但直播放量与价盘维护存在天然矛盾。</li>
+<li><b>小红书=专业种草与决策场：</b>高端护肤"做功课"主阵地，成分、真人测评、专柜体验分享驱动决策。</li>
+<li><b>天猫/京东仍是货架与心智锚：</b>官方旗舰承担正装、礼盒与会员运营。</li>
+</ul>
+<div class="chart-box">
+  <div class="chart-title">图1 · 高端护肤增长驱动力与传播趋势（营销相关维度，示意强度）</div>
+  <canvas id="chartTrend" height="150"></canvas>
+  <div class="chart-note">注：为便于策划优先级判断的定性强度示意（0–100），非精确市场数据；依据公开行业报道综合研判。</div>
+</div>
+
+<!-- 三 -->
+<h2><span class="num">三</span>品牌现状诊断</h2>
+<div class="grid2">
+  <div class="card"><h4>品牌背景</h4><p>1976 年由 Hubert d'Ornano 创立，法国家族独立企业（未被大集团收购），主打"高科技植物精粹（Phyto-Cosmetology）"，全球高端植萃护肤代表之一。家族长期经营、稳健增长是其重要叙事。</p></div>
+  <div class="card"><h4>产品/服务结构</h4><p>核心资产：<b>全能乳液 / 全能乳液面霜</b>（品牌招牌，被视为"贵妇入门"）、<b>黑玫瑰系列</b>（紧致抗老）、<b>抗蔚蓝精华</b>、驻颜霜、眼唇霜、粉底液等。护肤为主，彩妆/香水为辅。</p></div>
+  <div class="card"><h4>价格带与渠道</h4><p>典型正装千元至数千元区间（如全能乳液面霜、黑玫瑰系列），属超高端。渠道以高端百货专柜、官方商城、天猫/京东官旗为主，<b>价盘坚挺、极少深度打折</b>。</p></div>
+  <div class="card"><h4>品牌定位与价值主张</h4><p>"植物+科技"双引擎的高端功效护肤；强调配方独特性、成分萃取工艺与肤感体验；情感上贩卖"低调的高级感"与"懂行人的选择"。</p></div>
+</div>
+
+<div class="chart-box">
+  <div class="chart-title">图2 · 希思黎品牌资产雷达（相对贵妇竞品的能力画像，示意）</div>
+  <canvas id="chartRadar" height="170"></canvas>
+  <div class="chart-note">注：定性研判示意，用于识别短板与放大点，非量化调研数据。</div>
+</div>
+
+<h3>优势与短板</h3>
+<div class="grid2">
+  <div class="card"><h4>优势 <span class="pill p-str">可放大</span></h4>
+  <ul>
+    <li>家族独立、长期主义——"不被资本裹挟"的稀缺信任叙事</li>
+    <li>价盘稳定、极少破价——在贵妇塌房潮中反成"高级感锚"</li>
+    <li>植萃专业性 + 明星大单品（全能乳液）心智扎实</li>
+    <li>老客忠诚度高、复购与客单稳定</li>
+  </ul></div>
+  <div class="card"><h4>短板 <span class="pill p-weak">需补课</span></h4>
+  <ul>
+    <li>客群偏成熟，<b>年轻高消费增量人群渗透不足</b></li>
+    <li>社媒声量与话题度低于海蓝之谜/赫莲娜，缺"出圈内容"</li>
+    <li>"植物"叙事在成分党时代需科技证据补强，否则显"传统"</li>
+    <li>抖音兴趣电商/直播布局相对保守，年轻触点弱</li>
+  </ul></div>
+</div>
+
+<!-- 四 -->
+<h2><span class="num">四</span>用户分析</h2>
+<table>
+<tr><th>人群</th><th>画像与场景</th><th>购买动机</th><th>购买阻碍</th></tr>
+<tr><td><b>核心用户</b><br>35–55岁 成熟高净值女性</td><td>都市中产及以上、事业成熟或高净值家庭；护肤"做减法但升级"；重专柜体验与稳定肤感</td><td>确定性、抗老效果、身份认同、"用惯了不换"</td><td>价格高但已接受；主要风险是"被更会营销的竞品分流"</td></tr>
+<tr><td><b>增量用户</b><br>28–40岁 高消费/成分党/悦己型</td><td>互联网/新中产、小红书重度用户、抗初老焦虑、愿为"值得"买单但要看证据</td><td>抗初老前置、悦己犒赏、送礼、"贵妇平替不如直接上贵妇"</td><td>不理解"植物为什么值这个价"；缺乏当代化内容触发；对比竞品科技叙事更"性感"</td></tr>
+<tr><td><b>替代/流失</b></td><td>转向械字号功效精华、国货高端（如珀莱雅红宝石/双抗）、或被破价竞品吸走</td><td>更强的"成分-功效-价格"确定性</td><td>—</td></tr>
+</table>
+<div class="callout">
+  <div class="t">用户洞察（策划可用语句）</div>
+  该品牌的增量年轻用户不是买不起，而是<b>缺少"我为什么现在、为什么是希思黎"的当代理由</b>。内容不应停在"贵妇经典"，而要给出场景触发——换季泛红、熬夜急救、医美术后养肤、通勤抗初老、高端礼赠——把"经典"翻译成"此刻我需要"。
+</div>
+
+<!-- 五 -->
+<h2><span class="num">五</span>竞品分析</h2>
+<h3>竞争格局与竞品打法</h3>
+<table>
+<tr><th>品牌</th><th>定位/卖点</th><th>价格</th><th>营销打法</th><th>当前状态</th></tr>
+<tr><td><b>海蓝之谜 La Mer</b></td><td>神奇活性精萃(Miracle Broth)、修护+情绪叙事</td><td>超高端</td><td>情感故事+明星代言+直播放量</td><td>声量大但陷"卖不动/价格争议"舆论</td></tr>
+<tr><td><b>莱珀妮 La Prairie</b></td><td>鱼子精华、奢华仪式感、艺术调性</td><td>顶奢</td><td>高奢艺术联名+精致专柜体验</td><td>"不甘当贵妇"，谋求年轻化与科技化转型</td></tr>
+<tr><td><b>赫莲娜 HR</b></td><td>黑白绷带、医研级抗老科技</td><td>超高端</td><td>科技硬叙事+大单品+直播</td><td>618 破价引发舆论困局</td></tr>
+<tr><td><b>娇兰 帝皇蜂姿</b></td><td>蜂疗修护抗老、法式奢华</td><td>超高端</td><td>成分故事+高端专柜+礼赠</td><td>稳健，抗老赛道正面竞争</td></tr>
+<tr><td><b>希思黎 Sisley</b></td><td><b>高科技植物精粹、全能乳液、家族独立</b></td><td>超高端</td><td><b>稳价盘+口碑复购+相对低调</b></td><td><b>稳但声量偏弱、年轻化待补</b></td></tr>
+</table>
+
+<div class="chart-box">
+  <div class="chart-title">图3 · 贵妇护肤竞品定位矩阵（X：科技叙事强度 → ；Y：价盘稳定/克制程度 ↑）</div>
+  <canvas id="chartMatrix" height="220"></canvas>
+  <div class="chart-note">注：定性定位示意。右上角=科技叙事强且价盘稳；希思黎处"价盘稳但科技叙事待强化"象限——正是其突破方向。</div>
+</div>
+
+<h3>可借鉴点与空白机会</h3>
+<div class="grid2">
+  <div class="card"><h4>可借鉴</h4><ul>
+    <li>赫莲娜"大单品+科技符号（绷带）"的记忆点打造</li>
+    <li>海蓝之谜"成分故事化"的情绪穿透</li>
+    <li>莱珀妮"高奢体验/艺术联名"的圈层运营</li>
+  </ul></div>
+  <div class="card"><h4>空白机会（希思黎独占位）</h4><ul>
+    <li><b>"不破价的高级感"</b>——竞品破价塌房时，稳价盘是差异化信任资产</li>
+    <li><b>"植物+科技双证据链"</b>——回应成分党，同时保留温和/高级调性</li>
+    <li><b>"家族独立·长期主义"</b>——反资本快消叙事，圈层认同感强</li>
+  </ul></div>
+</div>
+
+<!-- 六 -->
+<h2><span class="num">六</span>社媒与内容观察</h2>
+<table>
+<tr><th>平台</th><th>角色</th><th>希思黎当前情况</th><th>内容机会</th></tr>
+<tr><td><b>小红书</b></td><td>专业种草/决策场</td><td>有全能乳液口碑基础，但"经典贵妇"叙事偏老</td><td>成分教育+真人肤况对比+专柜体验+"贵妇入门"攻略</td></tr>
+<tr><td><b>抖音</b></td><td>兴趣电商/放量</td><td>布局相对保守，年轻触点弱</td><td>场景短视频(急救/术后养肤)+达人测评+品牌自播强化价盘信任</td></tr>
+<tr><td><b>天猫/京东</b></td><td>货架/会员</td><td>官旗承接，礼盒与会员运营为主</td><td>大单品礼赠化+会员专属体验</td></tr>
+<tr><td><b>微信/私域</b></td><td>高客单复购</td><td>专柜VIP服务</td><td>1v1肤质管家+高净值圈层沙龙</td></tr>
+</table>
+<div class="judge">对策划意味着：<b>不要平均铺开</b>。小红书补"当代化专业叙事"，抖音补"场景化年轻触点+价盘信任自播"，天猫/私域承接高客单复购与礼赠——三者分工而非同质投放。</div>
+
+<!-- 七 -->
+<h2><span class="num">七</span>品牌机会与风险</h2>
+<div class="grid2">
+  <div class="card"><h4>可放大资产 / 机会</h4><ul>
+    <li>稳价盘 → "不破价"信任营销（趁竞品塌房窗口）</li>
+    <li>全能乳液 → 打造成"贵妇界的硬通货"记忆符号</li>
+    <li>植物+科技 → 双证据链回应成分党，抢抗老增量</li>
+    <li>家族独立 → 长期主义/反快消的圈层叙事</li>
+  </ul></div>
+  <div class="card"><h4>风险与限制</h4><ul>
+    <li>年轻化过猛可能稀释高级感与老客认同——需分线沟通</li>
+    <li>抖音放量与稳价盘的天然矛盾，需自播/控价机制</li>
+    <li>"植物"若不补科技证据，易被贴"传统/不够硬核"标签</li>
+    <li>竞品破价短期或分流价格敏感客</li>
+  </ul></div>
+</div>
+
+<!-- 八 -->
+<h2><span class="num">八</span>营销策划建议</h2>
+<div class="callout"><div class="t">核心策略主线</div>
+<b>「植萃硬科技 · 不破价的高级感」</b>——把希思黎的"稳"从被动优势升级为主动信任资产，同时用科技证据链和场景内容激活年轻增量，实现"守住老客、拿下增量、不伤价盘"。</div>
+
+<table>
+<tr><th style="width:16%">要素</th><th>具体建议</th></tr>
+<tr><td>目标人群</td><td>①守：35–55岁核心贵妇（复购/会员/礼赠）；②攻：28–40岁高消费成分党+悦己型（增量主战场）</td></tr>
+<tr><td>定位角度</td><td>从"经典贵妇"→"懂行人的长期主义之选"；从"植物温和"→"植物+科技的高级功效"</td></tr>
+<tr><td>传播主题</td><td>「值得，是因为一直值得」（稳价盘/长期主义）· 「植物的硬核」（科技证据）· 「第一瓶贵妇，选对不踩坑」（新手友好入门）</td></tr>
+<tr><td>内容支柱</td><td>1) 成分/科技证据（专利、临床、萃取工艺）；2) 场景化功效（换季/熬夜/术后/通勤/礼赠）；3) 圈层与体验（专柜仪式、家族故事、VIP沙龙）</td></tr>
+<tr><td>平台组合</td><td>小红书(专业种草·40%) + 抖音(场景短视频&自播·35%) + 天猫京东(货架礼赠·15%) + 微信私域(高客单复购·10%)</td></tr>
+<tr><td>KOL/KOC策略</td><td>头部专业护肤博主背书科技叙事；腰部真人肤况测评做信任；高奢生活方式KOL做圈层；素人KOC铺"贵妇入门攻略"</td></tr>
+<tr><td>Campaign方向</td><td>①「全能乳液·贵妇硬通货」大单品符号战役；②「不破价宣言」信任营销(节点错位大促周期)；③「换季/术后急救养肤」场景战役；④高端礼赠季圈层Campaign</td></tr>
+<tr><td>建议指标</td><td>品牌搜索指数、小红书正向声量与收藏、抖音大单品GMV与自播占比、新客(28–40岁)占比、老客复购率、价盘稳定度(破价投诉率)</td></tr>
+</table>
+
+<div class="chart-box">
+  <div class="chart-title">图4 · 营销机会优先级矩阵（气泡越大=资源建议倾斜越多）</div>
+  <canvas id="chartOpp" height="220"></canvas>
+  <div class="chart-note">注：X=落地难度(越右越难)，Y=营销价值(越上越高)，气泡大小=建议投入优先级。左上=高价值易落地，优先启动。</div>
+</div>
+
+<!-- 九 -->
+<h2><span class="num">九</span>资料来源、假设与待验证问题</h2>
+<h3>关键假设</h3>
+<ul>
+<li>希思黎在中国维持超高端定位与稳价盘策略不变（近年公开信息支持此判断）。</li>
+<li>高端护肤"回暖但分化"、抗老为核心增长赛道的行业判断，在未来 6–12 个月延续。</li>
+<li>希思黎年轻客群渗透与社媒声量弱于头部竞品——基于公开内容观察，非官方披露数据。</li>
+</ul>
+<h3>信息缺口 / 待向客户确认</h3>
+<ul>
+<li>希思黎中国区精确销售规模、渠道占比（线下专柜 vs 电商）、老客/新客结构？</li>
+<li>现有小红书/抖音投放预算、自播现状与价盘管控机制？</li>
+<li>本次策划核心目标（拉新 vs 声量 vs 老客深耕 vs 大单品增长）与主推品类/单品？</li>
+<li>是否有明确的年轻化边界（避免稀释高级感的红线）？</li>
+</ul>
+
+<div class="disc">⚠️ 不确定性说明：本报告价格带、竞品状态、社媒声量为公开资料综合研判与定性观察，图表数值为便于策划优先级判断的<b>示意强度</b>，非精确市场统计。关键决策前建议以客户内部数据交叉验证。</div>
+
+<h3>主要资料来源</h3>
+<ul class="src">
+<li><a href="https://www.sisley.com.cn/" target="_blank">Sisley 法国希思黎官方商城（产品、价格、明星单品）</a></li>
+<li><a href="https://www.jiemian.com/article/11006797.html" target="_blank">界面新闻：Sisley 希思黎的"下一步"</a></li>
+<li><a href="https://www.cbo.cn/article/id/52796.html" target="_blank">CBO：49 年植萃老品牌的皮肤科学新叙事</a></li>
+<li><a href="https://baike.baidu.com/item/%E5%B8%8C%E6%80%9D%E9%BB%8E/2920731" target="_blank">百度百科：希思黎（品牌背景、家族企业）</a></li>
+<li><a href="https://www.ctwant.com/article/474582/" target="_blank">CTWANT：Sisley 亚太总监——"买少但买更好"</a></li>
+<li><a href="http://www.xinhuanet.com/fashion/20260611/fc938428863a4abdb8e60e8f31ad856a/c.html" target="_blank">新华网：高端美妆市场回暖，行业竞争逻辑重写</a></li>
+<li><a href="https://assets.kpmg.com/content/dam/kpmgsites/cn/pdf/zh/2025/11/2025-china-beauty-market-industry-report.pdf" target="_blank">KPMG：2025 年中国美妆市场行业报告</a></li>
+<li><a href="https://www.frostchina.com/content/insight/detail/69451fb44a7a7390dec9c78f" target="_blank">沙利文/头豹：2025 年中国护肤品行业白皮书</a></li>
+<li><a href="https://www.bain.com.cn/news_info.php?id=2102" target="_blank">贝恩：2025 中国奢侈品市场——美妆个护领跑、消费更理性</a></li>
+<li><a href="https://www.jiemian.com/article/12858106.html" target="_blank">界面新闻："贵妇"们为什么不买赫莲娜和海蓝之谜了？</a></li>
+<li><a href="https://www.36kr.com/p/3334774476401159" target="_blank">36氪：赫莲娜与海蓝之谜的 618 风波</a></li>
+<li><a href="https://www.tmtpost.com/7458258.html" target="_blank">钛媒体：海蓝之谜们卖不动了</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/1917899562514879785" target="_blank">知乎：当莱珀妮们不再甘当"贵妇品牌"</a></li>
+<li><a href="https://app.myzaker.com/news/article.php?pk=6a3e38cf8e9f090c997ec61a" target="_blank">ZAKER：国际高端美妆在抖音 618 增速超 60%</a></li>
+<li><a href="https://www.cbndata.com/information/295395" target="_blank">CBNData：高端美妆，杀回抖音</a></li>
+<li><a href="https://www.tmtpost.com/8047508.html" target="_blank">钛媒体：天猫抖音 618 美妆榜——国际大牌重回强势</a></li>
+</ul>
+
+<p class="footnote" style="margin-top:30px;text-align:center;">本报告为营销策划前期洞察，用于内部研判与提案背景。数值化图表为定性示意，最终决策请以客户实际数据校准。</p>
+
+</div>
+
+<script>
+Chart.defaults.font.family = "PingFang SC, Microsoft YaHei, sans-serif";
+Chart.defaults.color = "#666";
+const GOLD="#a8894f", GOLDS="#d4b986", ROSE="#8f3b52", GREEN="#3d6b52", ACC="#7a5c3e";
+
+// 图1 趋势强度
+new Chart(document.getElementById('chartTrend'),{
+  type:'bar',
+  data:{labels:['抗老科技叙事','"买少买更好"理性升级','抖音兴趣电商','小红书专业种草','价盘/破价敏感度','礼赠/悦己场景'],
+    datasets:[{label:'营销相关强度(示意)',data:[92,85,80,88,78,70],
+      backgroundColor:[ROSE,GOLD,'#c98a5a',GREEN,'#b5654a',GOLDS],borderRadius:5}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false}},
+    scales:{x:{max:100,grid:{color:'#eee'}},y:{grid:{display:false}}}}
+});
+
+// 图2 品牌资产雷达
+new Chart(document.getElementById('chartRadar'),{
+  type:'radar',
+  data:{labels:['价盘稳定','明星单品心智','专业/科技信任','年轻声量','社媒话题度','渠道(抖音)活跃','老客忠诚'],
+    datasets:[
+    {label:'希思黎',data:[90,82,75,45,42,48,88],borderColor:ACC,backgroundColor:'rgba(168,137,79,.22)',borderWidth:2,pointBackgroundColor:ACC},
+    {label:'头部贵妇竞品(均值)',data:[55,80,82,72,80,78,70],borderColor:ROSE,backgroundColor:'rgba(143,59,82,.12)',borderWidth:2,pointBackgroundColor:ROSE}
+  ]},
+  options:{plugins:{legend:{position:'bottom'}},scales:{r:{min:0,max:100,ticks:{stepSize:20,backdropColor:'transparent'},grid:{color:'#e6e0d8'},angleLines:{color:'#e6e0d8'}}}}
+});
+
+// 图3 竞品定位矩阵
+new Chart(document.getElementById('chartMatrix'),{
+  type:'scatter',
+  data:{datasets:[
+    {label:'希思黎',data:[{x:60,y:90}],backgroundColor:ACC,pointRadius:13,pointHoverRadius:15},
+    {label:'海蓝之谜',data:[{x:72,y:45}],backgroundColor:ROSE,pointRadius:11},
+    {label:'莱珀妮',data:[{x:68,y:78}],backgroundColor:'#c98a5a',pointRadius:11},
+    {label:'赫莲娜',data:[{x:90,y:38}],backgroundColor:'#555',pointRadius:11},
+    {label:'娇兰帝皇蜂姿',data:[{x:70,y:65}],backgroundColor:GREEN,pointRadius:11}
+  ]},
+  options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:(c)=>c.dataset.label}}},
+    scales:{
+      x:{title:{display:true,text:'科技叙事强度 →'},min:40,max:100,grid:{color:'#eee'}},
+      y:{title:{display:true,text:'价盘稳定/克制 ↑'},min:20,max:100,grid:{color:'#eee'}}}}
+});
+
+// 图4 机会优先级气泡
+new Chart(document.getElementById('chartOpp'),{
+  type:'bubble',
+  data:{datasets:[
+    {label:'"不破价"信任营销',data:[{x:30,y:88,r:22}],backgroundColor:'rgba(143,59,82,.6)'},
+    {label:'全能乳液大单品符号战役',data:[{x:45,y:85,r:20}],backgroundColor:'rgba(168,137,79,.6)'},
+    {label:'植物+科技证据链',data:[{x:65,y:82,r:18}],backgroundColor:'rgba(61,107,82,.55)'},
+    {label:'场景化年轻内容(急救/术后)',data:[{x:50,y:72,r:16}],backgroundColor:'rgba(201,138,90,.6)'},
+    {label:'抖音自播补课',data:[{x:70,y:66,r:14}],backgroundColor:'rgba(85,85,85,.5)'},
+    {label:'高端礼赠圈层',data:[{x:40,y:60,r:12}],backgroundColor:'rgba(212,185,134,.7)'}
+  ]},
+  options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12}},
+    tooltip:{callbacks:{label:(c)=>c.dataset.label}}},
+    scales:{
+      x:{title:{display:true,text:'落地难度 →'},min:20,max:85,grid:{color:'#eee'}},
+      y:{title:{display:true,text:'营销价值 ↑'},min:50,max:100,grid:{color:'#eee'}}}}
+});
+</script>
+
 </body>
+</html>
