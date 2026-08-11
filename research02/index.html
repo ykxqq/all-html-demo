@@ -1,4 +1,1088 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家电行业与小吉（洗衣机）品牌营销分析</title>
+<style>
+  :root {
+    --primary: #2c3e50;
+    --accent: #e74c3c;
+    --accent2: #3498db;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --border: #e0e0e0;
+    --text: #333;
+    --text-light: #666;
+    --green: #27ae60;
+    --orange: #f39c12;
+    --purple: #8e44ad;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.8;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+    padding: 60px 40px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.2em; margin-bottom: 10px; }
+  .hero .subtitle { font-size: 1.1em; opacity: 0.85; margin-bottom: 20px; }
+  .hero .meta { font-size: 0.9em; opacity: 0.6; }
+
+  /* Section titles */
+  h2 {
+    font-size: 1.6em;
+    color: var(--primary);
+    border-left: 4px solid var(--accent);
+    padding-left: 14px;
+    margin: 40px 0 20px;
+  }
+  h3 { font-size: 1.2em; color: var(--primary); margin: 24px 0 12px; }
+  h4 { font-size: 1.05em; color: #555; margin: 16px 0 8px; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  /* Summary grid */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .summary-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-top: 3px solid var(--accent2);
+  }
+  .summary-card.warn { border-top-color: var(--accent); }
+  .summary-card.good { border-top-color: var(--green); }
+  .summary-card h4 { font-size: 0.95em; color: var(--text-light); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .summary-card p { font-size: 0.95em; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92em;
+  }
+  th {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #fafafa; }
+  .highlight-row td { background: #fff3cd !important; font-weight: 600; }
+
+  /* Charts */
+  .chart-container { margin: 20px 0; }
+  .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { width: 120px; text-align: right; font-size: 0.88em; flex-shrink: 0; }
+  .bar-track { flex: 1; background: #eee; border-radius: 4px; height: 28px; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: 0.82em; color: #fff; font-weight: 600; transition: width 0.8s ease; }
+  .bar-value { width: 60px; font-size: 0.88em; font-weight: 600; flex-shrink: 0; }
+
+  .pie-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .pie-card { text-align: center; }
+  .pie-card svg { width: 140px; height: 140px; }
+  .pie-card .label { font-size: 0.88em; color: var(--text-light); margin-top: 8px; }
+
+  /* Stat boxes */
+  .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+  .stat-box {
+    flex: 1; min-width: 150px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .stat-box .num { font-size: 2em; font-weight: 700; color: var(--accent); }
+  .stat-box .num.down { color: var(--accent); }
+  .stat-box .num.blue { color: var(--accent2); }
+  .stat-box .desc { font-size: 0.85em; color: var(--text-light); margin-top: 4px; }
+
+  /* SWOT */
+  .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .swot-box { padding: 20px; border-radius: 8px; }
+  .swot-box.s { background: #e8f5e9; border-left: 4px solid var(--green); }
+  .swot-box.w { background: #fbe9e7; border-left: 4px solid var(--accent); }
+  .swot-box.o { background: #e3f2fd; border-left: 4px solid var(--accent2); }
+  .swot-box.t { background: #fff3e0; border-left: 4px solid var(--orange); }
+  .swot-box h4 { margin-bottom: 8px; font-size: 1em; }
+  .swot-box ul { padding-left: 18px; font-size: 0.9em; }
+  .swot-box li { margin-bottom: 4px; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .tag-red { background: #fde8e8; color: var(--accent); }
+  .tag-green { background: #e8f5e9; color: var(--green); }
+  .tag-blue { background: #e3f2fd; color: var(--accent2); }
+  .tag-orange { background: #fff3e0; color: var(--orange); }
+  .tag-purple { background: #f3e5f5; color: var(--purple); }
+
+  /* Ratings */
+  .stars { color: #f39c12; letter-spacing: 2px; }
+
+  /* Footnotes */
+  .sources {
+    margin-top: 40px;
+    padding: 24px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    font-size: 0.85em;
+  }
+  .sources h3 { margin-bottom: 12px; }
+  .sources ol { padding-left: 20px; }
+  .sources li { margin-bottom: 6px; color: var(--text-light); }
+  .sources a { color: var(--accent2); }
+
+  /* Campaign cards */
+  .campaign-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid var(--accent2);
+  }
+  .campaign-card h4 { color: var(--accent2); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 30px 20px; }
+    .hero h1 { font-size: 1.5em; }
+    .swot-grid { grid-template-columns: 1fr; }
+    .bar-label { width: 80px; font-size: 0.78em; }
+  }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .card, .summary-card, .stat-box { box-shadow: none; border: 1px solid #ddd; }
+    .hero { background: #1a1a2e !important; -webkit-print-color-adjust: exact; }
+  }
+
+  /* Donut SVG */
+  .donut-ring { fill: none; stroke: #eee; }
+  .donut-segment { fill: none; }
+</style>
+</head>
 <body>
-<h1>这是demo1页面</h1>
+
+<div class="container">
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>家电行业与小吉品牌营销分析</h1>
+  <p class="subtitle">聚焦洗衣机赛道 · 面向营销策划的洞察报告</p>
+  <p class="meta">市场范围：中国 · 分析深度：标准版 · 时间范围：2025–2026 · 报告日期：2026年7月</p>
+</div>
+
+<!-- ====== 一、策划结论摘要 ====== -->
+<h2>一、策划结论摘要</h2>
+
+<div class="summary-grid">
+  <div class="summary-card warn">
+    <h4>行业当前阶段</h4>
+    <p>洗衣机行业进入"存量换新"深水区，2025年首次量额双降（销量4166万台↓3.2%，销额963亿↓4.6%），2026年持续承压。结构性增长来自多筒分区洗、热泵洗烘一体、大容量化和智能化。</p>
+  </div>
+  <div class="summary-card">
+    <h4>品牌当前位置</h4>
+    <p>小吉是吉德集团孵化的"美学科技"品牌，在迷你/壁挂洗衣机赛道以设计感+场景化建立差异化。2026年从"流量驱动"向"线下深耕"转型（红星美凯龙80家新店），但品牌信任度因品控和售后问题面临实质性考验。</p>
+  </div>
+  <div class="summary-card good">
+    <h4>品牌营销机会</h4>
+    <p>机会不在继续加码"颜值"话术，而在把"分区洗护科学性"转化为可信赖的育儿/健康知识资产，重建"专业 &gt; 颜值"的品牌认知。</p>
+  </div>
+  <div class="summary-card">
+    <h4>下一步策划方向</h4>
+    <p>围绕"母婴洗护专家"定位重建信任，以真实用户循证内容替代流量型种草，线下门店成为体验+信任转化的核心战场，售后透明化作为差异化的品牌资产。</p>
+  </div>
+</div>
+
+<!-- ====== 二、行业快速理解 ====== -->
+<h2>二、行业快速理解</h2>
+
+<h3>2.1 行业规模与走势</h3>
+
+<div class="stat-row">
+  <div class="stat-box">
+    <div class="num down">4166<span style="font-size:0.5em"> 万台</span></div>
+    <div class="desc">2025年全渠道销量 ↓3.2%</div>
+  </div>
+  <div class="stat-box">
+    <div class="num down">963<span style="font-size:0.5em"> 亿元</span></div>
+    <div class="desc">2025年全渠道销额 ↓4.6%</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">915<span style="font-size:0.5em"> 亿元</span></div>
+    <div class="desc">2026年零售额预测 ↓5.0%</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">46<span style="font-size:0.5em">%</span></div>
+    <div class="desc">中国占全球洗衣机产量</div>
+  </div>
+</div>
+
+<div class="card">
+  <h4>2025年月度销量同比增速（"高开低走"）</h4>
+  <div class="chart-container">
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">2月</span>
+        <div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--green);">+27.7%</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">5月</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--green);">+33.5%</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">9月</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--accent);">转负</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">12月</span>
+        <div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--accent);">-27.9%</div></div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:0.85em;color:var(--text-light);margin-top:8px;">数据来源：奥维云网（AVC）推总数据</p>
+</div>
+
+<h3>2.2 品类结构（2025年全渠道零售额占比）</h3>
+
+<div class="card">
+  <div class="chart-container">
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">滚筒单洗</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent2);">41.5%</div></div>
+        <span class="bar-value">41.5%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">洗烘一体</span>
+        <div class="bar-track"><div class="bar-fill" style="width:65%;background:#2980b9;">26.8%</div></div>
+        <span class="bar-value">26.8%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">洗烘套装</span>
+        <div class="bar-track"><div class="bar-fill" style="width:31%;background:#1abc9c;">12.7%</div></div>
+        <span class="bar-value">12.7%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">波轮</span>
+        <div class="bar-track"><div class="bar-fill" style="width:42%;background:#95a5a6;">17.0%</div></div>
+        <span class="bar-value">~17%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">分区洗</span>
+        <div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--green);">2.4%</div></div>
+        <span class="bar-value">2.4%</span>
+        <span class="tag tag-green" style="margin-left:8px;">增长最快</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>2.3 竞争格局：一超多强</h3>
+
+<div class="card">
+  <div class="chart-container">
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">海尔系</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent2);">海尔+卡萨帝+统帅 47.3%</div></div>
+        <span class="bar-value">47.3%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">美的系</span>
+        <div class="bar-track"><div class="bar-fill" style="width:63%;background:#2980b9;">美的+小天鹅 ~29%</div></div>
+        <span class="bar-value">~29%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">海信/TCL等</span>
+        <div class="bar-track"><div class="bar-fill" style="width:30%;background:#95a5a6;">~15%</div></div>
+        <span class="bar-value">~15%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">外资品牌</span>
+        <div class="bar-track"><div class="bar-fill" style="width:15%;background:#bdc3c7;">西门子/博世等 5-8%</div></div>
+        <span class="bar-value">5-8%</span>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:0.85em;color:var(--text-light);">海尔系+美的系合计超75%，CR5超90%，中小品牌生存空间持续压缩</p>
+</div>
+
+<h3>2.4 核心行业趋势</h3>
+
+<div class="stat-row">
+  <div class="stat-box">
+    <div class="num blue">9.5<span style="font-size:0.5em">%</span></div>
+    <div class="desc">多筒产品线上渗透率（半年前3.2%）</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">74<span style="font-size:0.5em">%</span></div>
+    <div class="desc">1级能效产品占比（2025.12）</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">58<span style="font-size:0.5em">%+</span></div>
+    <div class="desc">线上渠道零售额占比</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">6.3<span style="font-size:0.5em">%</span></div>
+    <div class="desc">行业整体净利润率</div>
+  </div>
+</div>
+
+<h3>2.5 对品牌营销的影响（解读）</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:30%;">行业趋势</th><th>→ 对小吉的营销启示</th></tr>
+    <tr><td>分区洗品类在爬坡期</td><td>赛道本身有增长红利，但大厂（海尔/美的）正在快速跟进，<strong>窗口期有限</strong></td></tr>
+    <tr><td>消费者趋于理性</td><td>"颜值税"定价空间在收窄，必须补充<strong>"专业信任"维度</strong></td></tr>
+    <tr><td>线下渠道价值回归</td><td>壁挂洗衣机安装评估+实机体验是线下强项，<strong>80家新店=天然优势场域</strong></td></tr>
+    <tr><td>负面口碑传播力 &gt; 种草</td><td>售后口碑成为<strong>比种草更重要的传播资产</strong></td></tr>
+  </table>
+</div>
+
+<!-- ====== 三、品牌现状诊断 ====== -->
+<h2>三、品牌现状诊断</h2>
+
+<h3>3.1 品牌速览</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:25%;">维度</th><th>内容</th></tr>
+    <tr><td>品牌名称</td><td>小吉科技（MINIJ）</td></tr>
+    <tr><td>成立时间</td><td>2015年，创始人黎辉</td></tr>
+    <tr><td>母公司</td><td>吉德集团（46年家电制造经验）</td></tr>
+    <tr><td>品牌定位</td><td>"美学科技"——高颜值、迷你化、场景化智能家电</td></tr>
+    <tr><td>核心品类</td><td>壁挂洗衣机、内裤洗烘机、迷你滚筒洗烘一体机、复古冰箱</td></tr>
+    <tr><td>设计荣誉</td><td>德国iF奖、德国红点奖、中国红星奖</td></tr>
+    <tr><td>2026动向</td><td>红星美凯龙战略合作，年内计划80家线下新店</td></tr>
+  </table>
+</div>
+
+<h3>3.2 产品矩阵（洗衣机线）</h3>
+
+<div class="card">
+  <table>
+    <tr><th>产品线</th><th>容量</th><th>核心技术</th><th>价格带</th><th>竞争优势</th></tr>
+    <tr><td>壁挂洗衣机（基础款）</td><td>1.1kg</td><td>DD直驱、高温煮洗</td><td>1,799–2,300元</td><td><span class="stars">★★★</span> 入门差异化</td></tr>
+    <tr><td>壁挂洗衣机（高阶款）</td><td>3kg</td><td>DD直驱、UVC+95℃煮洗+蒸汽三重除菌、烘干</td><td>2,300–3,899元</td><td><span class="stars">★★★★★</span> 除菌配置最强</td></tr>
+    <tr><td>内裤洗烘机 U10</td><td>0.5kg</td><td>闪烘约25min、30dB静音</td><td>1,299–1,999元</td><td><span class="stars">★★★★</span> 静音+速度</td></tr>
+    <tr><td>内衣洗烘一体 X1</td><td>1.2kg</td><td>光氧/蓝氧冷水除菌、血渍洗</td><td>1,999–2,999元</td><td><span class="stars">★★★★</span> 除菌科技</td></tr>
+    <tr><td>热泵洗烘一体（新品）</td><td>8kg</td><td>精华高压喷淋、全域等离子净护、35℃恒温</td><td>待定</td><td><span class="stars">★★★★</span> 技术升级</td></tr>
+    <tr class="highlight-row"><td colspan="5" style="text-align:center;">总体定价：中高端溢价定位，显著高于同品类国产品牌</td></tr>
+  </table>
+</div>
+
+<h3>3.3 品牌SWOT速诊</h3>
+
+<div class="swot-grid">
+  <div class="swot-box s">
+    <h4>S 优势</h4>
+    <ul>
+      <li>细分品类先发优势（壁挂/内衣洗衣机品类教育者）</li>
+      <li>设计美学差异化（iF/红点奖，竞品短期难以模仿）</li>
+      <li>吉德集团制造背景（46年工厂，降低供应链风险）</li>
+      <li>母婴场景天然信任背书需求，内容营销精准触达</li>
+    </ul>
+  </div>
+  <div class="swot-box w">
+    <h4>W 劣势</h4>
+    <ul>
+      <li>售后体系严重拖后腿：黑猫投诉超1,700条</li>
+      <li>"一次性家电"负面标签正在固化</li>
+      <li>智能功能历史包袱：APP"远程阉割"事件</li>
+      <li>品牌信任赤字：销售费用6倍于研发</li>
+      <li>线下服务能力薄弱，依赖第三方</li>
+    </ul>
+  </div>
+  <div class="swot-box o">
+    <h4>O 机会</h4>
+    <ul>
+      <li>分区洗品类高增长，赛道红利仍在</li>
+      <li>母婴洗护"专业顾问"定位完全空白</li>
+      <li>儿科/妇产科专业背书无人占据</li>
+      <li>线下80家店=安装体验差异化入口</li>
+      <li>售后透明化本身就是品牌差异化信号</li>
+    </ul>
+  </div>
+  <div class="swot-box t">
+    <h4>T 威胁</h4>
+    <ul>
+      <li>海尔/美的在分区洗领域加速跟进，窗口期有限</li>
+      <li>小米以1/5价格建立价格锚点效应</li>
+      <li>消费理性化趋势："颜值"溢价空间收窄</li>
+      <li>拔草笔记增速超过种草笔记</li>
+      <li>负面口碑存量为搜索引擎永久广告</li>
+    </ul>
+  </div>
+</div>
+
+<h3>3.4 品牌认知分裂</h3>
+
+<div class="card">
+  <table>
+    <tr><th></th><th>品牌想表达的</th><th>消费者实际感知的</th></tr>
+    <tr><td>核心标签</td><td>科技感+品质感+美学属性</td><td><span class="tag tag-red">好看</span> <span class="tag tag-orange">网红</span></td></tr>
+    <tr><td>创始人话术</td><td>"我不是洗衣机，我是小吉洗衣机器人"</td><td>"外观好看，别的没有了"</td></tr>
+    <tr><td>核心价值</td><td>未来美好生活的供应商</td><td>颜值不错的细分洗衣机</td></tr>
+  </table>
+  <p style="margin-top:12px;font-size:0.9em;color:var(--accent);"><strong>诊断结论</strong>：认知分裂明显——品牌端的"科技"叙事在消费端被弱化为"颜值"标签，"重营销轻研发"印象加深了这一分裂。</p>
+</div>
+
+<!-- ====== 四、用户分析 ====== -->
+<h2>四、用户分析</h2>
+
+<h3>4.1 用户分层与画像</h3>
+
+<div class="card">
+  <table>
+    <tr><th>层级</th><th>人群</th><th>画像</th><th>核心痛点</th><th>优先级</th></tr>
+    <tr style="background:#e8f5e9;">
+      <td><strong>L1 核心</strong></td>
+      <td>母婴家庭</td>
+      <td>25–35岁新手妈妈，一二线城市，有消费力</td>
+      <td>婴儿衣物不能混洗、手洗耗时、独立大洗衣机占空间</td>
+      <td><span class="tag tag-green">最高</span></td>
+    </tr>
+    <tr>
+      <td><strong>L2 核心</strong></td>
+      <td>精致独居/二人青年</td>
+      <td>22–30岁，一二线租房或小户型</td>
+      <td>内衣裤独立洗护、空间有限、夜间静音</td>
+      <td><span class="tag tag-blue">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>L3 潜在</strong></td>
+      <td>品质升级家庭</td>
+      <td>已有一台主流洗衣机，愿为精细洗护额外付费</td>
+      <td>真丝/羊毛/高端面料护理</td>
+      <td><span class="tag tag-orange">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>L4 潜在</strong></td>
+      <td>银发适老化</td>
+      <td>老年人，壁挂不弯腰操作友好</td>
+      <td>目前传播几乎空白</td>
+      <td><span class="tag tag-purple">待开发</span></td>
+    </tr>
+  </table>
+</div>
+
+<h3>4.2 消费场景与内容触点</h3>
+
+<div class="card">
+  <table>
+    <tr><th>场景</th><th>触发</th><th>内容触点</th><th>决策特征</th></tr>
+    <tr><td>怀孕/新生儿</td><td>医院建议、过来人经验</td><td>小红书育儿攻略、母婴社群推荐</td><td><span class="tag tag-red">高卷入·信任优先</span></td></tr>
+    <tr><td>搬家/装修</td><td>空间规划时发现需求</td><td>家装博主"阳台改造"、小红书案例</td><td><span class="tag tag-blue">视觉驱动·颜值权重高</span></td></tr>
+    <tr><td>内衣裤手洗疲劳</td><td>日常痛点积累</td><td>抖音场景短视频"洗澡时就把内裤洗了"</td><td><span class="tag tag-orange">冲动驱动·价格不敏感</span></td></tr>
+    <tr><td>换季/大促</td><td>平台促销提醒</td><td>李佳琦直播间、天猫618/双11</td><td><span class="tag tag-purple">价格+冲动双驱动</span></td></tr>
+  </table>
+</div>
+
+<h3>4.3 用户决策链路</h3>
+
+<div class="card" style="text-align:center;padding:30px;">
+  <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:0.9em;">
+    <span style="background:#e3f2fd;padding:8px 14px;border-radius:20px;">📱 触发<br><small>小红书/直播间/朋友</small></span>
+    <span style="font-size:1.3em;color:var(--accent2);">→</span>
+    <span style="background:#e8f5e9;padding:8px 14px;border-radius:20px;">🔍 种草<br><small>什么值得买测评/笔记</small></span>
+    <span style="font-size:1.3em;color:var(--accent2);">→</span>
+    <span style="background:#fbe9e7;padding:8px 14px;border-radius:20px;">⚠️ 疑虑<br><small>搜"小吉 质量""售后"</small></span>
+    <span style="font-size:1.3em;color:var(--accent2);">→</span>
+    <span style="background:#fff3e0;padding:8px 14px;border-radius:20px;">⚖️ 比价<br><small>天猫/京东横评竞品</small></span>
+    <span style="font-size:1.3em;color:var(--accent2);">→</span>
+    <span style="background:#f3e5f5;padding:8px 14px;border-radius:20px;">✅/❌ 决策<br><small>取决于负面容忍度+价格</small></span>
+  </div>
+  <p style="margin-top:16px;font-size:0.85em;color:var(--accent);"><strong>关键断点</strong>：用户在"疑虑"环节搜索负面信息时，黑猫投诉1700+条内容成为决策杀手</p>
+</div>
+
+<h3>4.4 购买动机与阻碍</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:50%;">✅ 购买动机</th><th style="width:50%;">❌ 购买阻碍</th></tr>
+    <tr>
+      <td>
+        <strong>功能动机</strong>：婴儿衣物独立洗护（健康）、内衣裤独立洗（卫生）、壁挂省空间<br>
+        <strong>情绪动机</strong>：做精致妈妈的自我认同、"解放双手"的自我奖赏<br>
+        <strong>社交动机</strong>：阳台改造晒图、分享"高颜值好物"
+      </td>
+      <td>
+        <strong>#1 信任焦虑</strong>：负面口碑——"坏了没人修""修了也修不好""智能功能失效"<br>
+        <strong>#2 安装限制</strong>：壁挂式必须承重墙，大量租房用户不达标<br>
+        <strong>#3 价格敏感</strong>：与小米低价竞品对比，"为颜值多花1000+值不值？"<br>
+        <strong>#4 品类认知不足</strong>："内衣洗衣机没必要""手洗就好"
+      </td>
+    </tr>
+  </table>
+</div>
+
+<h3>4.5 消费者价值权重变化</h3>
+
+<div class="card">
+  <h4>"实用功能"权重持续上升，"外观设计"持续下降</h4>
+  <div class="chart-container">
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">2020年 实用功能</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--green);">45%</div></div>
+        <span class="bar-value">45%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2025年 实用功能</span>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent2);">68%</div></div>
+        <span class="bar-value">68%</span>
+        <span class="tag tag-blue">+23pp</span>
+      </div>
+      <div class="bar-row" style="margin-top:8px;">
+        <span class="bar-label">2020年 外观设计</span>
+        <div class="bar-track"><div class="bar-fill" style="width:78%;background:#e0e0e0;color:#666;">35%</div></div>
+        <span class="bar-value">35%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label" style="color:var(--accent);">2025年 外观设计</span>
+        <div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--accent);">18%</div></div>
+        <span class="bar-value">18%</span>
+        <span class="tag tag-red">-17pp</span>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:0.8em;color:var(--text-light);margin-top:6px;">对营销策划的意义：单纯靠"颜值"沟通的效率在持续下降，"专业信任"内容权重必须提升</p>
+</div>
+
+<!-- ====== 五、竞品分析 ====== -->
+<h2>五、竞品分析</h2>
+
+<h3>5.1 竞品全景矩阵</h3>
+
+<div class="card">
+  <table>
+    <tr><th>品牌</th><th>定位</th><th>代表产品</th><th>价格带</th><th>核心竞争力</th><th>对位威胁</th></tr>
+    <tr><td><strong>小天鹅</strong></td><td>国民性价比</td><td>TG30M60 3kg壁挂</td><td>2,000–2,500</td><td>水魔方冷水洗、303mm超薄、52种洗护程序、3年质保</td><td><span class="tag tag-red">品牌信任+参数碾压</span></td></tr>
+    <tr><td><strong>海尔</strong></td><td>全屋智能巨头</td><td>云溪716 壁挂</td><td>中高端</td><td>ALT防跌落、一键智洗、海尔智家生态、最大售后网</td><td><span class="tag tag-red">生态绑定+售后壁垒</span></td></tr>
+    <tr><td><strong>卡萨帝</strong></td><td>高端精工</td><td>C3 3W1U1</td><td>高端</td><td>Smart防跌落、真丝/蕾丝护理、母婴+奢品双卡位</td><td><span class="tag tag-orange">高端面料护理占位</span></td></tr>
+    <tr><td><strong>小米</strong></td><td>极致性价比</td><td>米家内衣洗衣机</td><td>200–800</td><td>价格锚点效应、米家智能生态</td><td><span class="tag tag-red">1/5价格拉低品类价值感</span></td></tr>
+    <tr><td><strong>松下</strong></td><td>日系精工</td><td>迷你滚筒系列</td><td>2,000–4,000</td><td>日系品质信任、除菌技术积累</td><td><span class="tag tag-orange">品牌信任降维打击</span></td></tr>
+    <tr><td><strong>奥克斯等</strong></td><td>低价替代</td><td>迷你波轮</td><td>200–500</td><td>功能基本满足、价格极低</td><td><span class="tag tag-purple">下沉市场分流</span></td></tr>
+  </table>
+</div>
+
+<h3>5.2 核心竞品雷达对比</h3>
+
+<div class="card">
+  <table>
+    <tr><th>维度</th><th style="color:var(--accent);">小吉</th><th>小天鹅</th><th>海尔/卡萨帝</th><th>小米</th></tr>
+    <tr><td>颜值设计</td><td class="highlight-row">★★★★★</td><td>★★★</td><td>★★★★</td><td>★★</td></tr>
+    <tr><td>品控口碑</td><td style="color:var(--accent);">★★</td><td class="highlight-row">★★★★</td><td>★★★★★</td><td>★★★</td></tr>
+    <tr><td>售后网络</td><td style="color:var(--accent);">★★</td><td>★★★★</td><td class="highlight-row">★★★★★</td><td>★★★</td></tr>
+    <tr><td>除菌配置</td><td class="highlight-row">★★★★★</td><td>★★★</td><td>★★★★</td><td>★★</td></tr>
+    <tr><td>静音表现</td><td class="highlight-row">★★★★★</td><td>★★★★</td><td>★★★★</td><td>★★★</td></tr>
+    <tr><td>价格竞争力</td><td style="color:var(--accent);">★★</td><td>★★★</td><td>★★</td><td class="highlight-row">★★★★★</td></tr>
+    <tr><td>智能生态</td><td style="color:var(--accent);">★★</td><td>★★★</td><td class="highlight-row">★★★★★</td><td>★★★★</td></tr>
+  </table>
+  <p style="font-size:0.85em;color:var(--text-light);margin-top:8px;">小吉在"颜值+除菌+静音"三项领先，但在"品控+售后+智能生态"三项严重落后于传统大厂</p>
+</div>
+
+<h3>5.3 竞品营销打法拆解</h3>
+
+<div class="card">
+  <table>
+    <tr><th>竞品</th><th>核心打法</th><th>可借鉴点</th></tr>
+    <tr>
+      <td><strong>小天鹅</strong></td>
+      <td>"国民品牌"信任资产+美的集团母品牌背书，不做网红式爆款，靠测评型内容自然渗透</td>
+      <td>3年质保承诺 → 小吉可考虑延长保修作为信任重建抓手</td>
+    </tr>
+    <tr>
+      <td><strong>海尔</strong></td>
+      <td>全屋智能生态拉新、线下场景体验式销售、"懒人三筒"产品概念打造（7个月单品20万台）</td>
+      <td>线下体验式销售 → 小吉80家新店的参考模板</td>
+    </tr>
+    <tr>
+      <td><strong>小米</strong></td>
+      <td>价格锚点策略：用399元内衣洗衣机建立品类价格参照系，让小吉显得"贵得不值得"</td>
+      <td>小吉需正面回应"贵在哪里"——用技术细节和制造品质讲价值故事</td>
+    </tr>
+  </table>
+</div>
+
+<h3>5.4 空白机会识别</h3>
+
+<div class="stat-row">
+  <div class="stat-box" style="border-top:3px solid var(--green);">
+    <div class="desc" style="font-size:1em;font-weight:700;color:var(--green);">机会 1</div>
+    <div class="desc" style="font-size:0.9em;">"母婴洗护科学知识体系"——目前没有品牌系统性地建立，内容资产完全空白</div>
+  </div>
+  <div class="stat-box" style="border-top:3px solid var(--accent2);">
+    <div class="desc" style="font-size:1em;font-weight:700;color:var(--accent2);">机会 2</div>
+    <div class="desc" style="font-size:0.9em;">儿科/妇产科专业背书——竞品均未深度捆绑医疗端信任资源</div>
+  </div>
+  <div class="stat-box" style="border-top:3px solid var(--orange);">
+    <div class="desc" style="font-size:1em;font-weight:700;color:var(--orange);">机会 3</div>
+    <div class="desc" style="font-size:0.9em;">安装服务体验差异化——壁挂安装是高卷入决策点，可转化为品牌印象</div>
+  </div>
+  <div class="stat-box" style="border-top:3px solid var(--purple);">
+    <div class="desc" style="font-size:1em;font-weight:700;color:var(--purple);">机会 4</div>
+    <div class="desc" style="font-size:0.9em;">吉德46年制造故事——当前传播中被严重低估的信任资产</div>
+  </div>
+</div>
+
+<!-- ====== 六、社媒与内容观察 ====== -->
+<h2>六、社媒与内容观察</h2>
+
+<h3>6.1 平台角色矩阵</h3>
+
+<div class="card">
+  <table>
+    <tr><th>平台</th><th>角色</th><th>优势内容形式</th><th>小吉当前表现</th><th>机会评级</th></tr>
+    <tr><td><strong>小红书</strong></td><td>口碑主阵地</td><td>真实测评、母婴科普、阳台改造案例</td><td>种草笔记多，但拔草增速更快</td><td><span class="stars">★★★★★</span></td></tr>
+    <tr><td><strong>抖音</strong></td><td>场景触达+品类教育</td><td>场景短视频、直播功能演示</td><td>头部直播间合作，腰部内容待加强</td><td><span class="stars">★★★★</span></td></tr>
+    <tr><td><strong>天猫/京东</strong></td><td>成交收割</td><td>详情页、评价管理</td><td>主力销售渠道，详情页信任要素不足</td><td><span class="stars">★★★★</span></td></tr>
+    <tr><td><strong>什么值得买</strong></td><td>决策最后一站</td><td>深度横评、长测报告</td><td>有UGC测评，缺少品牌主导的专业长测</td><td><span class="stars">★★★★</span></td></tr>
+    <tr><td><strong>B站</strong></td><td>深度内容+Z世代</td><td>工厂探访、技术拆解</td><td>几乎空白——重建"科技"认知的关键平台</td><td><span class="stars">★★★</span></td></tr>
+  </table>
+</div>
+
+<h3>6.2 用户讨论焦点（正负面）</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:50%;background:var(--green);">✅ 正向高频讨论</th><th style="width:50%;background:var(--accent);">❌ 负向高频讨论</th></tr>
+    <tr><td>"颜值绝了""太好看了""阳台变高级了"</td><td>"用了一年就坏了""售后根本找不到人"</td></tr>
+    <tr><td>"静音效果真不错""宝宝衣服洗得很干净"</td><td>"智能功能用不了了""APP连接不上"</td></tr>
+    <tr><td>"不占地方""小户型福音"</td><td>"不值这个价""后悔没买小天鹅"</td></tr>
+    <tr><td>"血渍真的能洗掉""除菌效果安心"</td><td>"配件停产后只能买新的""维修师傅现场搜教程"</td></tr>
+  </table>
+</div>
+
+<h3>6.3 内容营销效果数据</h3>
+
+<div class="stat-row">
+  <div class="stat-box">
+    <div class="num blue">65<span style="font-size:0.5em">%</span></div>
+    <div class="desc">电商平台占内衣洗衣机销售份额</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">38<span style="font-size:0.5em">%</span></div>
+    <div class="desc">内容转化来自真实用户分享</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">120<span style="font-size:0.5em">%</span></div>
+    <div class="desc">"品牌词+测评"搜索点击率同比增长</div>
+  </div>
+  <div class="stat-box">
+    <div class="num blue">~5<span style="font-size:0.5em">%</span></div>
+    <div class="desc">社交媒体直播带货转化率</div>
+  </div>
+</div>
+
+<h3>6.4 内容机会方向</h3>
+
+<div class="card">
+  <table>
+    <tr><th>内容方向</th><th>核心洞察</th><th>建议形式</th></tr>
+    <tr>
+      <td><strong>"安装纪实"系列</strong></td>
+      <td>壁挂安装是最高焦虑环节，做成内容能消解顾虑+展示专业度</td>
+      <td>抖音系列短视频+H5墙体自检工具</td>
+    </tr>
+    <tr>
+      <td><strong>"长测报告"体系</strong></td>
+      <td>"什么值得买"是最后一站决策，30/60/90天使用报告影响权重极高</td>
+      <td>真实用户长测官制度+专业检测数据</td>
+    </tr>
+    <tr>
+      <td><strong>"分类洗护科普"</strong></td>
+      <td>品类认知不足是购买阻碍#4，知识型内容可凿开认知缺口</td>
+      <td>小红书图文+抖音短剧+医疗专业KOL合作</td>
+    </tr>
+    <tr>
+      <td><strong>"售后透明日记"</strong></td>
+      <td>售后是消费者最大疑虑，"透明化"本身就是差异化</td>
+      <td>售后师傅纪实+配件库存公示+维修进度查询</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ====== 七、品牌机会与风险 ====== -->
+<h2>七、品牌机会与风险</h2>
+
+<div class="swot-grid">
+  <div class="swot-box o">
+    <h4>可放大的品牌资产</h4>
+    <ul>
+      <li><strong>设计奖项资产</strong>：iF/红点奖 → 定价合理性和品质感沟通锚点</li>
+      <li><strong>吉德46年制造基因</strong>：当前传播严重低估 →"不是网红杂牌"的信任补丁</li>
+      <li><strong>细分赛道先发认知</strong>："内衣洗衣机=小吉"的品类关联已有基础</li>
+      <li><strong>母婴正向口碑池</strong>：大量真实UGC待系统化调用</li>
+    </ul>
+  </div>
+  <div class="swot-box o">
+    <h4>用户认知缺口</h4>
+    <ul>
+      <li><strong>"小吉=网红"标签固化</strong>：需要从"颜值>品质"反转为"专业>颜值"</li>
+      <li><strong>"吉德是谁"完全空白</strong>：46年制造集团的信任资产完全未开采</li>
+      <li><strong>"能装吗"认知模糊</strong>：安装条件信息传递不清，大量无效流量</li>
+      <li><strong>"和小米的区别"</strong>：价格锚点被人为拉低后价值感沟通不足</li>
+    </ul>
+  </div>
+  <div class="swot-box o">
+    <h4>差异化空间</h4>
+    <ul>
+      <li><strong>售后透明化 = 品牌差异化</strong>：行业普遍不透明，"可预期的售后"就是巨大信号</li>
+      <li><strong>母婴洗护知识体系</strong>：从"卖洗衣机"升级为"卖解决方案"</li>
+      <li><strong>80家线下店 = 信任重建场域</strong>：做成安装体验中心而非简单陈列</li>
+    </ul>
+  </div>
+  <div class="swot-box t">
+    <h4>传播风险与限制</h4>
+    <ul>
+      <li><strong>负面口碑存量</strong>：1,700+条投诉=搜索引擎永久广告</li>
+      <li><strong>智能功能历史包袱</strong>：APP"远程阉割"事件是信任裂缝</li>
+      <li><strong>大厂跟进加速</strong>：海尔/美的在分区洗投入加大，时间窗口有限</li>
+      <li><strong>营销预算天花板</strong>：销售费用6倍于研发的模式不可持续</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ====== 八、营销策划建议 ====== -->
+<h2>八、营销策划建议</h2>
+
+<h3>8.1 定位与传播角度调整</h3>
+
+<div class="card" style="background:linear-gradient(135deg,#f8f9fa,#e3f2fd);">
+  <table style="background:transparent;">
+    <tr><th style="width:50%;background:rgba(231,76,60,0.1);color:var(--accent);">当前</th><th style="width:50%;background:rgba(39,174,96,0.1);color:var(--green);">建议调整</th></tr>
+    <tr>
+      <td>"我不是洗衣机，我是小吉洗衣机器人"<br><small style="color:var(--text-light);">→ 强调科技感但空洞</small></td>
+      <td><strong>"每一件衣服，都值得独立被善待"</strong><br><small style="color:var(--text-light);">→ 强调科学分类洗护+母婴健康关怀</small></td>
+    </tr>
+  </table>
+  <p style="margin-top:16px;"><strong>三个传播角度</strong>：</p>
+  <p>
+    <span class="tag tag-blue">1. 科学洗护角度</span> 母婴衣物独立洗护的科学必要性（医疗端+专业端背书）&nbsp;
+    <span class="tag tag-green">2. 品质基因角度</span> 吉德集团46年制造——不是流量品牌，是工厂品牌 &nbsp;
+    <span class="tag tag-orange">3. 服务可见角度</span> 把安装、售后、配件管理变成可传播的透明资产
+  </p>
+</div>
+
+<h3>8.2 传播主题建议</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:5%;">#</th><th style="width:35%;">主题</th><th>洞察逻辑</th><th>适用场景</th></tr>
+    <tr>
+      <td>1</td>
+      <td><strong>"46年工厂做了一台小洗衣机"</strong></td>
+      <td>激活吉德集团背景，打"非网红"牌，建立品质信任</td>
+      <td>品牌形象广告、B站纪录片、工厂探访</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>"宝宝的第一台专属洗衣机"</strong></td>
+      <td>母婴场景独占，情感+功能双驱动，品类关联</td>
+      <td>母婴社群、小红书、天猫母婴频道</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>"你的内衣裤，值得用42分贝来呵护"</strong></td>
+      <td>将静音数据转化为情绪价值——"夜晚的温柔"</td>
+      <td>抖音场景短视频、精致独居群体</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>"我们给每一面墙，做7项安全检测"</strong></td>
+      <td>把安装服务体验做成话题内容，消解"能装吗"顾虑</td>
+      <td>安装纪实系列、线下门店体验</td>
+    </tr>
+  </table>
+</div>
+
+<h3>8.3 内容支柱体系</h3>
+
+<div class="card">
+  <table>
+    <tr><th>支柱</th><th>内容方向</th><th>平台侧重</th><th>频次建议</th></tr>
+    <tr>
+      <td><strong>科学洗护科普</strong></td>
+      <td>婴童衣物混洗风险、内衣独立洗必要性、面料洗护指南</td>
+      <td><span class="tag tag-red">小红书</span> <span class="tag tag-blue">什么值得买</span></td>
+      <td>每周2-3篇</td>
+    </tr>
+    <tr>
+      <td><strong>真实使用报告</strong></td>
+      <td>30/60/90天用户长测、ATP菌落检测数据、竞品实测对比</td>
+      <td><span class="tag tag-blue">什么值得买</span> <span class="tag tag-red">小红书</span></td>
+      <td>月度深度+季度横评</td>
+    </tr>
+    <tr>
+      <td><strong>安装服务纪实</strong></td>
+      <td>墙体评估→安装→验收全流程、疑难墙体解决方案</td>
+      <td><span class="tag tag-green">抖音</span> <span class="tag tag-red">小红书</span></td>
+      <td>每周1-2条</td>
+    </tr>
+    <tr>
+      <td><strong>品质制造揭秘</strong></td>
+      <td>吉德工厂探访、DD电机研发故事、质检流程全公开</td>
+      <td><span class="tag tag-purple">B站</span> <span class="tag tag-green">抖音</span></td>
+      <td>每月1-2条</td>
+    </tr>
+  </table>
+</div>
+
+<h3>8.4 平台组合策略</h3>
+
+<div class="card">
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">小红书</span>
+      <div class="bar-track"><div class="bar-fill" style="width:100%;background:#e74c3c;">口碑主阵地 ★★★★★</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">抖音</span>
+      <div class="bar-track"><div class="bar-fill" style="width:80%;background:#3498db;">场景触达+品类教育 ★★★★</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">天猫/京东</span>
+      <div class="bar-track"><div class="bar-fill" style="width:80%;background:#e67e22;">成交收割 ★★★★</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">什么值得买</span>
+      <div class="bar-track"><div class="bar-fill" style="width:80%;background:#2ecc71;">决策最后一站 ★★★★</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">B站</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%;background:#9b59b6;">深度内容+Z世代 ★★★</div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">微信私域</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%;background:#1abc9c;">母婴社群+售后专属 ★★★</div></div>
+    </div>
+  </div>
+</div>
+
+<h3>8.5 KOL/KOC 策略升级</h3>
+
+<div class="card">
+  <table>
+    <tr><th>类型</th><th>当前状态</th><th>升级方向</th><th>具体动作</th></tr>
+    <tr>
+      <td><strong>专业型KOL</strong></td>
+      <td><span class="tag tag-red">缺失</span></td>
+      <td><span class="tag tag-green">新增关键投入</span></td>
+      <td>签约儿科医生/妇产科医生/衣物护理专家，制作《婴幼儿衣物洗护科学指南》</td>
+    </tr>
+    <tr>
+      <td><strong>内容型KOL</strong></td>
+      <td><span class="tag tag-blue">有基础</span></td>
+      <td><span class="tag tag-blue">持续优化</span></td>
+      <td>家装博主+母婴生活方式博主，从颜值内容升级为"安装+使用全流程"内容</td>
+    </tr>
+    <tr>
+      <td><strong>素人KOC</strong></td>
+      <td><span class="tag tag-blue">有基础</span></td>
+      <td><span class="tag tag-green">升级运营</span></td>
+      <td>建立"真实用户长测官"制度，60/90天系统化使用报告产出</td>
+    </tr>
+    <tr>
+      <td><strong>负面翻转KOC</strong></td>
+      <td><span class="tag tag-red">完全空白</span></td>
+      <td><span class="tag tag-green">创新尝试</span></td>
+      <td>主动邀请曾发表负面体验的用户参与产品改进内测，翻转口碑</td>
+    </tr>
+  </table>
+</div>
+
+<h3>8.6 Campaign 创意方向</h3>
+
+<div class="campaign-card">
+  <h4>Campaign 1：「46年工厂的第二胎」</h4>
+  <p>从吉德集团46年制造基因切入，讲述"一个老牌大工厂为什么要做小洗衣机"的创业故事。打破"网红杂牌"认知，建立"工厂品牌"信任。</p>
+  <p>
+    <span class="tag tag-purple">B站纪录片型视频</span>
+    <span class="tag tag-green">工厂直播</span>
+    <span class="tag tag-red">小红书话题 #46年工厂的第二胎</span>
+  </p>
+</div>
+
+<div class="campaign-card">
+  <h4>Campaign 2：「宝宝洗护科代表」</h4>
+  <p>联合儿科医生/KOL，制作《婴幼儿衣物洗护科学指南》内容系列。占据"母婴衣物洗护=小吉"的心智空位。</p>
+  <p>
+    <span class="tag tag-red">小红书科普长图</span>
+    <span class="tag tag-green">抖音短剧</span>
+    <span class="tag tag-blue">线下门店科普角</span>
+  </p>
+</div>
+
+<div class="campaign-card">
+  <h4>Campaign 3：「小吉安装日记」</h4>
+  <p>真实记录100个家庭的壁挂洗衣机安装全过程，配套"你的墙能不能装"H5自助检测工具。把"安装顾虑"转化为"品牌体验"，让服务成为可传播的差异点。</p>
+  <p>
+    <span class="tag tag-green">抖音系列短视频</span>
+    <span class="tag tag-blue">H5墙体自检工具</span>
+    <span class="tag tag-red">小红书 #我家那面墙 UGC话题</span>
+  </p>
+</div>
+
+<div class="campaign-card">
+  <h4>Campaign 4：「售后透明计划」</h4>
+  <p>公开承诺配件保供年限/维修响应时效/退换条件，线上公示配件库存状态和维修进度，拍摄"售后师傅的一天"系列内容。用透明化对抗"售后差"的既有印象。</p>
+  <p>
+    <span class="tag tag-green">品牌官网售后公示页</span>
+    <span class="tag tag-purple">抖音"售后师傅日记"</span>
+    <span class="tag tag-blue">小程序维修进度查询</span>
+  </p>
+</div>
+
+<h3>8.7 建议指标与阶段规划</h3>
+
+<div class="card">
+  <table>
+    <tr><th>阶段</th><th>周期</th><th>核心指标</th><th>目标含义</th></tr>
+    <tr>
+      <td><strong>信任建设期</strong></td>
+      <td>0–6个月</td>
+      <td>品牌NPS、负面搜索占比、黑猫投诉处理率</td>
+      <td>降低负面认知增量，先止血再造血</td>
+    </tr>
+    <tr>
+      <td><strong>认知升级期</strong></td>
+      <td>3–9个月</td>
+      <td>"工厂品牌"相关搜索量、专业KOL内容互动率</td>
+      <td>替代"网红"标签，建立"专业"认知</td>
+    </tr>
+    <tr>
+      <td><strong>转化增长期</strong></td>
+      <td>6–12个月</td>
+      <td>线上搜索→购买转化率、线下门店体验→成交率</td>
+      <td>验证信任重建的商业效果</td>
+    </tr>
+    <tr>
+      <td><strong>长期持续</strong></td>
+      <td>12个月+</td>
+      <td>复购率（内衣洗衣机→洗烘一体机）、推荐率</td>
+      <td>验证品牌长期价值</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ====== 九、资料来源、假设与待验证问题 ====== -->
+<h2>九、资料来源、假设与待验证问题</h2>
+
+<h3>9.1 关键假设</h3>
+
+<div class="card">
+  <table>
+    <tr><th style="width:5%;">#</th><th>假设内容</th><th style="width:15%;">置信度</th></tr>
+    <tr>
+      <td>1</td>
+      <td>小吉销售费用/研发费用6:1的比例来自2023年公开报道，2025–2026年是否改善未知</td>
+      <td><span class="tag tag-orange">中</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>用户决策权重"实用功能68% vs 外观设计18%"数据来自第三方报告，覆盖全品类，小吉目标用户的设计权重可能高于均值</td>
+      <td><span class="tag tag-blue">较高</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2026年80家新店计划基于战略签约的规划目标，实际落地速度取决于执行</td>
+      <td><span class="tag tag-orange">中</span></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>竞品价格和参数来源于公开电商页面和评测文章，非官方一手数据</td>
+      <td><span class="tag tag-blue">较高</span></td>
+    </tr>
+  </table>
+</div>
+
+<h3>9.2 建议向客户确认的问题</h3>
+
+<div class="card">
+  <ol style="padding-left:20px;line-height:2.2;">
+    <li>品牌当前最核心的营销目标是什么？（拉新 / 重塑信任 / 品类拓展 / 线下渠道铺垫？）</li>
+    <li>2026年80家线下门店的定位——是销售渠道还是体验中心？对线上营销的配合期待是什么？</li>
+    <li>对"品质口碑问题"的态度——希望传播端避免提及、正面回应还是主动管理？</li>
+    <li>目标竞品确认——品牌内部认为谁是最直接的竞争对手？</li>
+    <li>是否有吉德集团品质故事/工厂资产的内部资料，可供传播端深度开发？</li>
+    <li>母婴细分市场的优先级判断——是否愿意将资源向母婴场景集中倾斜？</li>
+    <li>售后体系升级的时间表和计划——传播端需了解真实进展才能制定可信的传播策略</li>
+  </ol>
+</div>
+
+<!-- ====== 资料来源 ====== -->
+<div class="sources">
+  <h3>主要资料来源</h3>
+  <ol>
+    <li><strong>奥维云网（AVC）</strong>：2025年洗衣机行业推总数据及2026年预测 —— <a href="https://news.mysteel.com/a/26020510/64ED7C9CCD78B0B8.html" target="_blank">负增长已来！洗衣机行业"好日子"到头了？</a></li>
+    <li><strong>GfK中怡康 / 嘉世咨询</strong>：品类结构与价格段数据 —— <a href="https://dxpress.gelonghui.com/p/3560874" target="_blank">中国家用洗衣机市场研究报告</a></li>
+    <li><strong>奥维云网 & 口碑家电网</strong>：竞争格局（一超多强）分析 —— <a href="https://www.sohu.com/a/984435077_125646" target="_blank">多筒高增表象下整体萎缩，洗衣机行业一超多强格局稳定</a></li>
+    <li><strong>凤凰网科技</strong>：2026年4月小吉产品质量调查 —— <a href="https://tech.ifeng.com/c/8s81xSmXT8n" target="_blank">花7000元买"一次性"冰箱，被网红家电小吉收割的年轻人</a></li>
+    <li><strong>什么值得买（SMZDM）</strong>：小吉产品多篇评测及用户评论 —— <a href="https://post.smzdm.com/p/arzol7g7/" target="_blank">小吉VS小乌梅5.0对比</a> | <a href="https://post.smzdm.com/p/aggrwrdm/" target="_blank">有娃家庭值不值得装小吉壁挂洗衣机</a> | <a href="https://post.smzdm.com/p/a2q7npd2/#comments" target="_blank">小吉X1 Pro 300+用户观点</a></li>
+    <li><strong>百度百科</strong>：小吉/MINIJ品牌基础信息 —— <a href="https://baike.baidu.com/item/miniJ/5285306" target="_blank">miniJ 百度百科</a></li>
+    <li><strong>尚普咨询</strong>：2025年中国内衣洗衣机市场洞察报告 —— <a href="https://article.shangpu-china.com/scdc/12757.html" target="_blank">电商平台65%份额主导内衣洗衣机销售</a></li>
+    <li><strong>AWE 2026展会报道 / 东方财富</strong>：小吉线下战略合作及新品 —— <a href="https://finance.eastmoney.com/a/202505283417110440.html" target="_blank">从李佳琦直播间看618消费：年轻人愿为新潮家电买单</a></li>
+    <li><strong>搜狐 / 今日头条</strong>：小吉品牌质量问题及消费者维权报道 —— <a href="https://m.sohu.com/a/1006323161_122135404/" target="_blank">花7000元买"一次性"冰箱</a> | <a href="https://m.toutiao.com/article/7625884650317038123/" target="_blank">小吉：一个网红电器的"爆红与翻车"</a></li>
+    <li><strong>苏宁易购 / 什么值得买</strong>：壁挂洗衣机竞品对比 —— <a href="https://post.smzdm.com/p/ae69rmkq/" target="_blank">2026壁挂洗衣机怎么选？</a></li>
+    <li><strong>GEP Research</strong>：全球及中国洗衣机行业产业链分析 —— <a href="https://m.gepresearch.com/104/view-1086945-1.html" target="_blank">全球及中国洗衣机行业产业链价值链分析报告</a></li>
+    <li><strong>恒州诚思 / 新浪财经</strong>：2026年洗衣机品牌榜及选购指南 —— <a href="https://k.sina.cn/article_7879848980_1d5acf414068014pd8.html" target="_blank">2026十大洗衣机品牌榜出炉</a></li>
+    <li><strong>淘宝江湖 / 正观新闻</strong>：小吉品牌背景及营销策略分析 —— <a href="https://wap.zhengguannews.cn/html/zgh/398547.html" target="_blank">小吉电器：当"颜值神话"遭遇"品质危机"</a></li>
+  </ol>
+
+  <h3 style="margin-top:20px;">信息缺口</h3>
+  <ul style="padding-left:20px;color:var(--text-light);">
+    <li>小吉洗衣机产品线各SKU的实际销量和市场份额数据</li>
+    <li>小吉2025–2026年的实际营收、利润、研发投入占比（上市公司未单独披露）</li>
+    <li>各平台（小红书/抖音/天猫）小吉品牌内容量和情绪趋势的精确数据</li>
+    <li>80家线下门店的实际开业进度和选址策略</li>
+    <li>核心用户群的定量画像（年龄/收入/城市分布的精确数据）</li>
+  </ul>
+</div>
+
+<p style="text-align:center;color:var(--text-light);margin-top:40px;font-size:0.85em;">
+本报告基于公开资料整理，仅供营销策划前期洞察参考。关键数据请以品牌方一手资料和第三方付费数据为准。
+</p>
+
+</div><!-- .container -->
 </body>
+</html>
