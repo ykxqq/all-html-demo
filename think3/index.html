@@ -1,4 +1,902 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO 问题选择策略</title>
+
+<!-- ===========================================
+     FONTS — 思源宋体(权威标题) / 思源黑体(正文) / Space Mono(数据分数)
+     非系统字体，构成"宋体权威 + 等宽数据"的视觉主题
+     =========================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap">
+
+<style>
+/* ===========================================
+   CSS 变量 (主题) — 改这里即可换整体观感
+   =========================================== */
+:root {
+    /* 配色：深墨蓝 + 琥珀金 + 青 */
+    --stage-bg:      #060a14;   /* 舞台外底色(信箱边) */
+    --bg-primary:    #0a1120;   /* 幻灯片主底 */
+    --bg-panel:      #10192c;   /* 卡片面板 */
+    --bg-panel-2:    #16213a;   /* 次级面板/表头 */
+    --line:          rgba(148,168,204,0.14);
+    --text-primary:  #eef3fb;
+    --text-secondary:#93a1bd;
+    --text-dim:      #5f6f8c;
+    --accent:        #e8b23a;   /* 琥珀金 — 主强调(价值/品牌) */
+    --accent-soft:   rgba(232,178,58,0.14);
+    --cyan:          #52d6c8;   /* 青 — 数据/AI 强调 */
+    --cyan-soft:     rgba(82,214,200,0.12);
+    --danger:        #e07a5f;   /* 暖橙红 — 风险/放弃 */
+
+    /* 字体 */
+    --font-serif: 'Noto Serif SC', serif;
+    --font-sans:  'Noto Sans SC', sans-serif;
+    --font-mono:  'Space Mono', monospace;
+
+    /* 动效 */
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur: 0.7s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   viewport-base.css (完整内容 — 固定 16:9 舞台)
+   =========================================== */
+html, body {
+    width: 100%; height: 100%; margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed; inset: 0; overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden; display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible {
+    visibility: visible; opacity: 1; pointer-events: auto; z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed; left: 50%; bottom: 22px;
+    transform: translateX(-50%); z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important; visibility: visible !important;
+        opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px; break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   全局幻灯片底：墨蓝 + 网格纹 + 光晕
+   =========================================== */
+.slide {
+    --slide-bg: var(--bg-primary);
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background:
+        radial-gradient(ellipse 900px 600px at 88% 8%, rgba(232,178,58,0.10), transparent 60%),
+        radial-gradient(ellipse 900px 700px at 6% 98%, rgba(82,214,200,0.08), transparent 55%),
+        var(--bg-primary);
+}
+/* 细网格结构线 */
+.slide::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+        linear-gradient(rgba(148,168,204,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,168,204,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, #000 55%, transparent 100%);
+}
+
+.slide-content {
+    position: absolute; inset: 0;
+    padding: 84px 108px;
+    display: flex; flex-direction: column;
+    z-index: 2;
+}
+
+/* ===========================================
+   通用排版组件
+   =========================================== */
+.kicker {
+    font-family: var(--font-mono);
+    font-size: 20px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 22px;
+}
+.kicker::before {
+    content: ""; width: 46px; height: 2px; background: var(--accent);
+}
+.slide-title {
+    font-family: var(--font-serif); font-weight: 900;
+    font-size: 62px; line-height: 1.12; letter-spacing: 0.01em;
+}
+.slide-title .em { color: var(--accent); }
+.slide-title .em-c { color: var(--cyan); }
+.lead {
+    font-size: 27px; line-height: 1.6; color: var(--text-secondary);
+    font-weight: 300; max-width: 1300px; margin-top: 20px;
+}
+
+/* 数据/分数徽记 — 等宽体圆片 */
+.score {
+    font-family: var(--font-mono); font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1.5px solid rgba(232,178,58,0.5);
+    font-size: 24px; flex-shrink: 0;
+}
+.score.c { background: var(--cyan-soft); color: var(--cyan); border-color: rgba(82,214,200,0.5); }
+.score.dim { background: rgba(148,168,204,0.08); color: var(--text-dim); border-color: rgba(148,168,204,0.25); }
+
+/* ===========================================
+   表格样式
+   =========================================== */
+.tbl { width: 100%; border-collapse: collapse; font-size: 25px; }
+.tbl th {
+    font-family: var(--font-mono); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; font-size: 17px; color: var(--text-secondary);
+    text-align: left; padding: 18px 26px; background: var(--bg-panel-2);
+    border-bottom: 2px solid rgba(232,178,58,0.35);
+}
+.tbl td {
+    padding: 17px 26px; border-bottom: 1px solid var(--line);
+    color: var(--text-primary); vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr { background: rgba(16,25,44,0.5); }
+.tbl tbody tr:nth-child(even) { background: rgba(22,33,58,0.5); }
+.tbl .muted { color: var(--text-secondary); font-size: 23px; }
+.tbl .mono { font-family: var(--font-mono); color: var(--cyan); }
+
+/* ===========================================
+   卡片
+   =========================================== */
+.card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px; padding: 34px 36px;
+    position: relative; overflow: hidden;
+}
+.card .num {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.05em;
+}
+.card h3 {
+    font-family: var(--font-serif); font-weight: 700; font-size: 30px;
+    margin: 10px 0 12px;
+}
+.card p { font-size: 23px; line-height: 1.55; color: var(--text-secondary); font-weight: 300; }
+
+/* ===========================================
+   REVEAL 动画 (进入时错峰)
+   =========================================== */
+.reveal {
+    opacity: 0; transform: translateY(34px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.visible .reveal:nth-child(2) { transition-delay: 0.13s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: 0.21s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: 0.29s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: 0.37s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: 0.45s; }
+.slide.visible .reveal:nth-child(7) { transition-delay: 0.53s; }
+.slide.visible .reveal:nth-child(8) { transition-delay: 0.61s; }
+.d1{transition-delay:.1s!important}.d2{transition-delay:.2s!important}
+.d3{transition-delay:.3s!important}.d4{transition-delay:.4s!important}
+.d5{transition-delay:.5s!important}.d6{transition-delay:.6s!important}
+
+/* ===========================================
+   1. 封面
+   =========================================== */
+.title-slide { justify-content: center; }
+.title-slide .brand {
+    font-family: var(--font-mono); font-size: 20px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--cyan); margin-bottom: 40px;
+}
+.title-slide h1 {
+    font-family: var(--font-serif); font-weight: 900;
+    font-size: 118px; line-height: 1.06; letter-spacing: 0.01em;
+}
+.title-slide h1 .g {
+    background: linear-gradient(100deg, var(--accent), #f6d47f);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.title-slide .sub {
+    font-size: 32px; color: var(--text-secondary); font-weight: 300;
+    margin-top: 34px; max-width: 1100px; line-height: 1.55;
+}
+.title-slide .meta {
+    margin-top: 66px; display: flex; gap: 44px; align-items: center;
+    font-family: var(--font-mono); font-size: 19px; color: var(--text-dim);
+    letter-spacing: 0.05em;
+}
+.title-slide .meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* 封面右侧装饰环 */
+.orbit {
+    position: absolute; right: -140px; top: 50%; transform: translateY(-50%);
+    width: 720px; height: 720px; z-index: 1; opacity: 0.55;
+}
+.orbit .ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1px solid rgba(148,168,204,0.18);
+}
+.orbit .ring.r2 { inset: 90px; border-color: rgba(232,178,58,0.28); }
+.orbit .ring.r3 { inset: 200px; border-color: rgba(82,214,200,0.3); }
+.orbit .ring.r4 { inset: 300px; border: 1.5px dashed rgba(148,168,204,0.2); }
+.orbit .pin {
+    position: absolute; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 24px var(--accent);
+    top: 90px; left: 50%; transform: translateX(-50%);
+}
+.orbit .pin.c { background: var(--cyan); box-shadow: 0 0 24px var(--cyan); top: auto; bottom: 200px; left: 200px; }
+
+/* ===========================================
+   页眉 (内容页统一)
+   =========================================== */
+.page-head { margin-bottom: 36px; }
+
+/* 通用两栏 */
+.cols { display: grid; gap: 30px; flex: 1; min-height: 0; }
+
+/* 误区卡 */
+.pitfall {
+    border-left: 4px solid var(--danger);
+    background: linear-gradient(90deg, rgba(224,122,95,0.10), rgba(16,25,44,0.6));
+}
+.pitfall .tag {
+    font-family: var(--font-mono); font-size: 16px; letter-spacing: 0.1em;
+    color: var(--danger); text-transform: uppercase;
+}
+.principle {
+    border: 1.5px solid rgba(232,178,58,0.45);
+    background: linear-gradient(90deg, var(--accent-soft), rgba(16,25,44,0.4));
+}
+.principle .tag { color: var(--accent); }
+
+/* ===========================================
+   流程 pipeline (总览 & 落地)
+   =========================================== */
+.pipe { display: flex; align-items: stretch; gap: 0; flex: 1; }
+.pipe .step {
+    flex: 1; background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 30px 26px; position: relative;
+    display: flex; flex-direction: column;
+}
+.pipe .step .idx {
+    font-family: var(--font-mono); font-size: 34px; font-weight: 700; color: var(--accent);
+}
+.pipe .step h4 { font-family: var(--font-serif); font-size: 26px; margin: 14px 0 10px; font-weight: 700; }
+.pipe .step p { font-size: 20px; color: var(--text-secondary); line-height: 1.5; font-weight: 300; }
+.pipe .arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; color: var(--text-dim); font-size: 30px; flex-shrink: 0;
+}
+
+/* ===========================================
+   AI表现 清单
+   =========================================== */
+.checklist { display: flex; flex-direction: column; gap: 16px; }
+.check-item {
+    display: flex; align-items: center; gap: 22px;
+    background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 20px 28px;
+}
+.check-item .ic {
+    width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cyan-soft); color: var(--cyan); font-size: 24px; font-weight: 700;
+}
+.check-item .t { font-size: 25px; font-weight: 500; }
+.check-item .t span { color: var(--text-secondary); font-weight: 300; font-size: 22px; }
+
+/* 分数梯度条 */
+.scale-map { display: flex; flex-direction: column; gap: 12px; }
+.scale-row {
+    display: grid; grid-template-columns: 130px 1fr; align-items: center; gap: 24px;
+    background: rgba(16,25,44,0.5); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 24px;
+}
+.scale-row .hits { font-family: var(--font-mono); font-size: 21px; color: var(--text-secondary); }
+.scale-row .desc { font-size: 23px; }
+
+/* ===========================================
+   四象限图
+   =========================================== */
+.quad-wrap { display: grid; grid-template-columns: 1fr; flex: 1; min-height: 0; }
+.quad {
+    position: relative;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 18px; height: 100%;
+    padding: 12px 12px 12px 64px;   /* 左留 Y 轴空间 */
+}
+.qcell {
+    border-radius: 16px; padding: 30px 34px; position: relative; overflow: hidden;
+    border: 1px solid var(--line); background: var(--bg-panel);
+    display: flex; flex-direction: column; justify-content: space-between;
+}
+.qcell .qname { font-family: var(--font-serif); font-weight: 700; font-size: 32px; }
+.qcell .qdesc { font-size: 21px; color: var(--text-secondary); line-height: 1.5; font-weight: 300; margin-top: 8px; }
+.qcell .qtag {
+    align-self: flex-start; margin-top: 16px;
+    font-family: var(--font-mono); font-size: 16px; letter-spacing: 0.06em;
+    padding: 7px 15px; border-radius: 999px;
+}
+/* 象限配色 */
+.qcell.attack { border-color: rgba(232,178,58,0.55); background: linear-gradient(135deg, rgba(232,178,58,0.16), rgba(16,25,44,0.7)); }
+.qcell.attack .qname { color: var(--accent); }
+.qcell.attack .qtag { background: var(--accent-soft); color: var(--accent); }
+.qcell.expose { border-color: rgba(82,214,200,0.5); background: linear-gradient(135deg, rgba(82,214,200,0.14), rgba(16,25,44,0.7)); }
+.qcell.expose .qname { color: var(--cyan); }
+.qcell.expose .qtag { background: var(--cyan-soft); color: var(--cyan); }
+.qcell.hold { border-color: rgba(148,168,204,0.35); }
+.qcell.hold .qname { color: var(--text-primary); }
+.qcell.hold .qtag { background: rgba(148,168,204,0.12); color: var(--text-secondary); }
+.qcell.skip { border-style: dashed; opacity: 0.72; }
+.qcell.skip .qname { color: var(--text-dim); }
+.qcell.skip .qtag { background: rgba(224,122,95,0.12); color: var(--danger); }
+.qcell .star { position: absolute; top: 24px; right: 30px; font-size: 30px; color: var(--accent); }
+
+/* 象限轴标签 */
+.axis-y {
+    position: absolute; left: 4px; top: 0; bottom: 0; width: 52px;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 16px; color: var(--text-secondary);
+    letter-spacing: 0.1em; padding: 20px 0;
+}
+.axis-y .lab { writing-mode: vertical-rl; text-orientation: mixed; }
+.axis-x {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 16px; color: var(--text-secondary);
+    letter-spacing: 0.1em; padding: 14px 12px 0 76px;
+}
+.axis-title { color: var(--accent); font-weight: 700; }
+
+/* ===========================================
+   组合配比 条形
+   =========================================== */
+.mix { display: flex; flex-direction: column; gap: 26px; flex: 1; justify-content: center; }
+.mix-row { display: grid; grid-template-columns: 200px 1fr 120px; align-items: center; gap: 28px; }
+.mix-row .name { font-family: var(--font-serif); font-size: 30px; font-weight: 700; }
+.mix-row .bar { height: 44px; border-radius: 8px; position: relative; background: rgba(148,168,204,0.08); overflow: hidden; }
+.mix-row .fill { height: 100%; border-radius: 8px; transform-origin: left; transform: scaleX(0); transition: transform 1s var(--ease) 0.3s; }
+.slide.visible .mix-row .fill { transform: scaleX(1); }
+.mix-row .pct { font-family: var(--font-mono); font-size: 30px; font-weight: 700; text-align: right; }
+.mix-row .role { grid-column: 2 / 3; font-size: 20px; color: var(--text-secondary); font-weight: 300; margin-top: 4px; }
+
+/* 考核口径卡 */
+.kpi-card { display: flex; gap: 26px; align-items: flex-start; }
+.kpi-card .kn {
+    font-family: var(--font-mono); font-size: 44px; font-weight: 700; color: var(--accent);
+    line-height: 1; flex-shrink: 0; opacity: 0.85;
+}
+.kpi-card h3 { font-family: var(--font-serif); font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+.kpi-card p { font-size: 22px; color: var(--text-secondary); line-height: 1.55; font-weight: 300; }
+.formula {
+    font-family: var(--font-mono); font-size: 27px; color: var(--cyan);
+    background: var(--cyan-soft); border: 1px solid rgba(82,214,200,0.3);
+    border-radius: 12px; padding: 22px 30px; margin-top: 4px; letter-spacing: 0.02em;
+}
+.formula .op { color: var(--accent); }
+
+/* ===========================================
+   收尾
+   =========================================== */
+.closing { justify-content: center; align-items: flex-start; }
+.closing h2 {
+    font-family: var(--font-serif); font-weight: 900; font-size: 78px; line-height: 1.2;
+    max-width: 1500px;
+}
+.closing h2 .em { color: var(--accent); }
+.closing h2 .em-c { color: var(--cyan); }
+.closing .fin-meta {
+    margin-top: 60px; font-family: var(--font-mono); font-size: 20px;
+    color: var(--text-dim); letter-spacing: 0.1em;
+}
+
+/* ===========================================
+   页脚 / 页码 / 进度 (舞台外 chrome)
+   =========================================== */
+.deck-foot {
+    position: absolute; bottom: 40px; left: 108px; right: 108px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 16px; color: var(--text-dim);
+    letter-spacing: 0.08em; z-index: 3;
+}
+.progress {
+    position: fixed; top: 0; left: 0; height: 3px; background: var(--accent);
+    z-index: 1000; transition: width 0.4s var(--ease);
+    box-shadow: 0 0 12px var(--accent);
+}
+.pager {
+    position: fixed; right: 26px; bottom: 22px; z-index: 1000;
+    font-family: var(--font-mono); font-size: 15px; color: var(--text-secondary);
+    background: rgba(10,17,32,0.7); border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 999px; letter-spacing: 0.1em;
+}
+
+/* 编辑按钮 */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 18px; left: 18px; z-index: 10001;
+    width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg-panel); color: var(--text-primary); font-size: 20px;
+    cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { border-color: var(--accent); color: var(--accent); }
+[contenteditable="true"] { outline: 2px dashed var(--accent); outline-offset: 4px; border-radius: 4px; cursor: text; }
+</style>
+</head>
 <body>
-<h1>这是demo1页面</h1>
+<div class="progress" id="progress"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+    <!-- ============ 1. 封面 ============ -->
+    <section class="slide title-slide active">
+        <div class="orbit" aria-hidden="true">
+            <div class="ring"></div><div class="ring r2"></div>
+            <div class="ring r3"></div><div class="ring r4"></div>
+            <div class="pin"></div><div class="pin c"></div>
+        </div>
+        <div class="slide-content" style="justify-content:center;">
+            <div class="brand reveal">GEO · 生成式引擎优化</div>
+            <h1 class="reveal">问题选择<span class="g">策略</span></h1>
+            <p class="sub reveal">如何为品牌挑选、设计用于 AI 提及率测试的问题集，<br>并据此科学、可信地衡量 GEO 投放效果</p>
+            <div class="meta reveal">
+                <span>面向客户 · 方法论说明</span>
+                <span class="dot"></span>
+                <span>2026.08</span>
+            </div>
+        </div>
+        <div class="deck-foot"><span>GEO QUESTION STRATEGY</span><span>01 / 12</span></div>
+    </section>
+
+    <!-- ============ 2. 为什么问题选得对是成败关键 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">01 — 核心命题</div>
+                <h1 class="slide-title">为什么<span class="em">问题选得对</span>是 GEO 的成败关键</h1>
+            </div>
+            <p class="lead reveal">GEO 的效果，通过一组用户提问在 AI 回答中的<b style="color:var(--text-primary);font-weight:500">品牌提及率、引用率、排名</b>来衡量。因此，问题选得对不对，直接决定了效果数据是否真实、是否有商业价值。</p>
+            <div class="cols reveal" style="grid-template-columns:1fr 1fr; margin-top:34px;">
+                <div class="card pitfall">
+                    <div class="tag">误区 A</div>
+                    <h3>只挑容易被提及的问题</h3>
+                    <p>数字很好看，但这些问题几乎没有真实用户会问 —— 曝光没有意义。</p>
+                </div>
+                <div class="card pitfall">
+                    <div class="tag">误区 B</div>
+                    <h3>只挑最热门的问题</h3>
+                    <p>用户很多，但竞争激烈、AI 短期内根本不推荐品牌 —— 投前投后都难看到变化。</p>
+                </div>
+            </div>
+            <div class="card principle reveal" style="margin-top:26px;">
+                <div class="tag" style="font-family:var(--font-mono);font-size:16px;letter-spacing:.1em;">我们的原则</div>
+                <h3 style="margin-top:8px;">只在<span style="color:var(--accent)">真正有人问、能带来生意、且 AI 有机会推荐品牌</span>的问题上发力</h3>
+                <p>为此，每一个候选问题都要经过三个维度的量化打分。</p>
+            </div>
+        </div>
+        <div class="deck-foot"><span>核心命题</span><span>02 / 12</span></div>
+    </section>
+
+    <!-- ============ 3. 评估框架总览 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">02 — 框架总览</div>
+                <h1 class="slide-title">一套五步走的<span class="em-c">问题评估框架</span></h1>
+            </div>
+            <p class="lead reveal">从三维打分到效果考核，全流程标准公开、可复现、可验证。</p>
+            <div class="pipe reveal" style="margin-top:40px; flex:0 0 auto;">
+                <div class="step"><div class="idx">1</div><h4>三维打分</h4><p>真实热度 · 用户旅程 · AI 表现，各打 1–5 分</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">2</div><h4>综合价值分</h4><p>三项相乘，任一项过低即被显著拉低</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">3</div><h4>四象限分类</h4><p>按热度 × AI 表现落区，决定怎么投</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">4</div><h4>分层组合</h4><p>主攻 / 曝光 / 守住 按比例搭配</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">5</div><h4>效果考核</h4><p>加权提及率 + 进步幅度，共签锁定</p></div>
+            </div>
+            <div class="formula reveal" style="margin-top:44px; text-align:center; font-size:30px;">
+                综合价值分 <span class="op">=</span> 真实热度 <span class="op">×</span> 用户旅程 <span class="op">×</span> AI 表现
+            </div>
+        </div>
+        <div class="deck-foot"><span>框架总览</span><span>03 / 12</span></div>
+    </section>
+
+    <!-- ============ 4. 维度① 真实热度 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">维度 ① / 真实热度</div>
+                <h1 class="slide-title">有多少人<span class="em">真的在问</span></h1>
+            </div>
+            <p class="lead reveal">数据来自搜索指数、AI 提问记录、小红书 / 知乎讨论量等真实数据源，<b style="color:var(--text-primary);font-weight:500">不靠主观判断</b>。方法：把本次所有候选问题按提问量排序，<b style="color:var(--text-primary);font-weight:500">按排名位置打分</b>（不同品类数量差异大，比排位最公平）。</p>
+            <div class="reveal" style="margin-top:34px;">
+                <table class="tbl">
+                    <thead><tr><th style="width:120px;">分数</th><th style="width:360px;">在本批问题中的排位</th><th>通俗理解</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="score">5</span></td><td class="mono">前 10%</td><td>最热门 —— 大家都在问的那几个</td></tr>
+                        <tr><td><span class="score">4</span></td><td class="mono">前 10% – 30%</td><td>很多人问</td></tr>
+                        <tr><td><span class="score">3</span></td><td class="mono">前 30% – 60%</td><td>不少人问</td></tr>
+                        <tr><td><span class="score">2</span></td><td class="mono">前 60% – 85%</td><td>少数人问</td></tr>
+                        <tr><td><span class="score dim">1</span></td><td class="mono">后 15%</td><td>几乎没人问（如带品牌名的问题）</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="deck-foot"><span>维度 ① 真实热度</span><span>04 / 12</span></div>
+    </section>
+
+    <!-- ============ 5. 维度② 用户旅程 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">维度 ② / 用户旅程</div>
+                <h1 class="slide-title">问的人离<span class="em">下单</span>有多近</h1>
+            </div>
+            <p class="lead reveal">同样一次品牌曝光，出现在"马上要买"的人面前，价值远高于"随便了解一下"的人。按用户所处的购买阶段打分。</p>
+            <div class="reveal" style="margin-top:34px;">
+                <table class="tbl">
+                    <thead><tr><th style="width:120px;">分数</th><th style="width:320px;">决策阶段</th><th>典型提问</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="score">5</span></td><td><b>购买决策</b></td><td class="muted">"推荐几款…" · "哪个牌子好" · "值不值得买"</td></tr>
+                        <tr><td><span class="score">4</span></td><td><b>对比评估</b></td><td class="muted">"A 和 B 哪个好" · "参数怎么选" · "区别在哪"</td></tr>
+                        <tr><td><span class="score">3</span></td><td><b>方案考虑</b></td><td class="muted">"预算 3000 怎么选" · "租房适合买什么"</td></tr>
+                        <tr><td><span class="score">2</span></td><td><b>认知了解</b></td><td class="muted">"什么是…" · "有没有必要买"</td></tr>
+                        <tr><td><span class="score dim">1</span></td><td><b>售后 / 已购</b></td><td class="muted">"怎么保养" · "保修多久"</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:22px;color:var(--text-secondary);margin-top:22px;font-weight:300;">分数越高，越接近下单 —— 一次品牌曝光越值钱。</p>
+            </div>
+        </div>
+        <div class="deck-foot"><span>维度 ② 用户旅程</span><span>05 / 12</span></div>
+    </section>
+
+    <!-- ============ 6. 维度③ AI表现 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">维度 ③ / AI 表现</div>
+                <h1 class="slide-title">现在 AI 答得怎样，<span class="em-c">我们进得去吗</span></h1>
+            </div>
+            <p class="lead reveal" style="margin-bottom:8px;">判断方式：<b style="color:var(--text-primary);font-weight:500">直接把问题拿去问一遍当前的 AI，观察回答</b>，逐项核对下面 4 项，命中越多分越高 —— 结果可复现、可验证。</p>
+            <div class="cols reveal" style="grid-template-columns: 1.35fr 1fr; margin-top:26px; align-items:stretch;">
+                <div class="checklist">
+                    <div class="check-item"><div class="ic">①</div><div class="t">AI 会列品牌吗 <span>—— 出现具体品牌名，而非只讲通用建议</span></div></div>
+                    <div class="check-item"><div class="ic">②</div><div class="t">内容来源能不能影响 <span>—— 评测 / 种草 / 电商可投放；百科 / 官方词条改不动</span></div></div>
+                    <div class="check-item"><div class="ic">③</div><div class="t">卖点对得上吗 <span>—— 问题问的点，本品有真实、可信的证据</span></div></div>
+                    <div class="check-item"><div class="ic">④</div><div class="t">竞品占位不死 <span>—— 竞品尚未牢牢霸占前排</span></div></div>
+                </div>
+                <div class="scale-map">
+                    <div class="scale-row"><div class="hits"><span class="score c" style="width:38px;height:38px;font-size:19px;">5</span> 命中 4 项</div><div class="desc">很好进</div></div>
+                    <div class="scale-row"><div class="hits"><span class="score c" style="width:38px;height:38px;font-size:19px;">4</span> 命中 3 项</div><div class="desc">努努力能进</div></div>
+                    <div class="scale-row"><div class="hits"><span class="score c" style="width:38px;height:38px;font-size:19px;">3</span> 命中 2 项</div><div class="desc">需内容投放推动</div></div>
+                    <div class="scale-row"><div class="hits"><span class="score c" style="width:38px;height:38px;font-size:19px;">2</span> 命中 1 项</div><div class="desc">很难进</div></div>
+                    <div class="scale-row"><div class="hits"><span class="score dim" style="width:38px;height:38px;font-size:19px;">1</span> 命中 0 项</div><div class="desc" style="color:var(--danger);">投了也动不了（答案全抄百科）</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="deck-foot"><span>维度 ③ AI 表现</span><span>06 / 12</span></div>
+    </section>
+
+    <!-- ============ 7. 四象限图 ============ -->
+    <section class="slide">
+        <div class="slide-content" style="padding-bottom:60px;">
+            <div class="page-head reveal" style="margin-bottom:18px;">
+                <div class="kicker">03 — 综合分类</div>
+                <h1 class="slide-title">用<span class="em">真实热度</span> × <span class="em-c">AI 表现</span>，把问题落入四个区</h1>
+            </div>
+            <div class="quad-wrap reveal">
+                <div class="quad">
+                    <div class="axis-y">
+                        <span class="lab axis-title">AI 表现 高 ↑</span>
+                        <span class="lab">AI 表现 低 ↓</span>
+                    </div>
+                    <!-- 左上 守住 -->
+                    <div class="qcell hold">
+                        <div><div class="qname">守住区</div><div class="qdesc">没多少人问，但我们已占位（多为品牌 / 长尾问题）</div></div>
+                        <div class="qtag">考核：是否守住，别掉下去</div>
+                    </div>
+                    <!-- 右上 主攻 ★ -->
+                    <div class="qcell attack">
+                        <div class="star">★</div>
+                        <div><div class="qname">主攻区</div><div class="qdesc">很多人问，且 AI 进得去 —— 效果最直接的主力战场</div></div>
+                        <div class="qtag">考核：提及率、排名的绝对结果</div>
+                    </div>
+                    <!-- 左下 放弃 -->
+                    <div class="qcell skip">
+                        <div><div class="qname">暂不投放</div><div class="qdesc">没人问，也进不去 —— 不浪费预算</div></div>
+                        <div class="qtag">考核：不投放</div>
+                    </div>
+                    <!-- 右下 曝光 -->
+                    <div class="qcell expose">
+                        <div><div class="qname">曝光区</div><div class="qdesc">品牌想要的高流量大问题，但 AI 暂时不推荐品牌</div></div>
+                        <div class="qtag">考核：进步幅度（投前 vs 投后）</div>
+                    </div>
+                </div>
+            </div>
+            <div class="axis-x reveal"><span>← 真实热度 低</span><span class="axis-title">真实热度 高 →</span></div>
+        </div>
+        <div class="deck-foot"><span>四象限分类</span><span>07 / 12</span></div>
+    </section>
+
+    <!-- ============ 8. 问题组合策略 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">04 — 组合策略</div>
+                <h1 class="slide-title">单一类型无法兼顾，<span class="em">分层组合</span></h1>
+            </div>
+            <p class="lead reveal">既要效果可见、又要覆盖品牌最看重的大问题，还要守住已有阵地 —— 三类问题按比例搭配。</p>
+            <div class="mix reveal" style="margin-top:20px;">
+                <div class="mix-row">
+                    <div class="name" style="color:var(--accent);">主攻类</div>
+                    <div class="bar"><div class="fill" style="width:50%;background:linear-gradient(90deg,var(--accent),#f6d47f);"></div></div>
+                    <div class="pct" style="color:var(--accent);">50%</div>
+                    <div class="role">主力出成绩，效果最直接</div>
+                </div>
+                <div class="mix-row">
+                    <div class="name" style="color:var(--cyan);">曝光类</div>
+                    <div class="bar"><div class="fill" style="width:20%;background:linear-gradient(90deg,var(--cyan),#8fe9de);"></div></div>
+                    <div class="pct" style="color:var(--cyan);">20%</div>
+                    <div class="role">覆盖品牌最看重的高流量大问题</div>
+                </div>
+                <div class="mix-row">
+                    <div class="name">守住类</div>
+                    <div class="bar"><div class="fill" style="width:30%;background:linear-gradient(90deg,#93a1bd,#c3cee0);"></div></div>
+                    <div class="pct">30%</div>
+                    <div class="role">稳住已有阵地，防止被竞品挤占</div>
+                </div>
+            </div>
+            <p class="reveal" style="font-size:22px;color:var(--text-dim);margin-top:8px;font-family:var(--font-mono);">* 占比可根据品牌所处行业位置（头部 / 腰部 / 新锐）与预算灵活调整</p>
+        </div>
+        <div class="deck-foot"><span>组合策略</span><span>08 / 12</span></div>
+    </section>
+
+    <!-- ============ 9. 效果考核口径 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">05 — 考核口径</div>
+                <h1 class="slide-title">保证效果<span class="em">公平、可信</span>的三条口径</h1>
+            </div>
+            <div class="cols reveal" style="grid-template-columns:1fr; gap:22px; margin-top:26px;">
+                <div class="card kpi-card">
+                    <div class="kn">01</div>
+                    <div style="flex:1;">
+                        <h3>按综合价值分加权</h3>
+                        <p style="margin-bottom:14px;">没人问的低价值问题权重极低，无法虚增数字 —— 保证效果反映真实商业价值。</p>
+                        <div class="formula">加权提及率 <span class="op">=</span> Σ(各问题提及得分 <span class="op">×</span> 综合价值分权重) <span class="op">÷</span> Σ 综合价值分权重</div>
+                    </div>
+                </div>
+                <div class="card kpi-card">
+                    <div class="kn">02</div>
+                    <div><h3>既看绝对值，也看进步幅度（Lift）</h3>
+                    <p>高热度大问题竞争激烈、短期难登顶，因此考核其投前 vs 投后的进步（如从第 7 提到第 4）。品牌最看重的热门问题也能纳入，效果得到客观体现。</p></div>
+                </div>
+                <div class="card kpi-card">
+                    <div class="kn">03</div>
+                    <div><h3>问题集事前共签、投放前后锁定</h3>
+                    <p>问题清单在投放前经双方确认签字，投前投后保持一致、不做更换 —— 效果对比建立在同一把尺子上，公平可复核。</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="deck-foot"><span>考核口径</span><span>09 / 12</span></div>
+    </section>
+
+    <!-- ============ 10. 落地流程 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">06 — 落地流程</div>
+                <h1 class="slide-title">从<span class="em">诊断</span>到<span class="em-c">考核</span>的六步落地</h1>
+            </div>
+            <div class="pipe reveal" style="margin-top:60px; flex:0 0 auto;">
+                <div class="step"><div class="idx">1</div><h4>行业与竞争诊断</h4><p>品牌位置 · 本品与竞品卖点对位 · 用户决策旅程 · 渠道与品类特性</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">2</div><h4>生成候选问题池</h4><p>覆盖不同决策阶段与卖点角度</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">3</div><h4>三维打分</h4><p>热度 × 旅程 × AI 表现 → 综合价值分</p></div>
+            </div>
+            <div class="pipe reveal" style="margin-top:30px; flex:0 0 auto;">
+                <div class="step"><div class="idx">4</div><h4>四象限分类 + 组合</h4><p>按建议占比搭配主攻 / 曝光 / 守住</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">5</div><h4>共签、锁定问题集</h4><p>双方确认，投前投后不更换</p></div>
+                <div class="arrow">→</div>
+                <div class="step"><div class="idx">6</div><h4>投放并考核效果</h4><p>加权提及率 + 进步幅度（Lift）</p></div>
+            </div>
+        </div>
+        <div class="deck-foot"><span>落地流程</span><span>10 / 12</span></div>
+    </section>
+
+    <!-- ============ 11. 附：打分表模板 ============ -->
+    <section class="slide">
+        <div class="slide-content">
+            <div class="page-head reveal">
+                <div class="kicker">附录 — 工具</div>
+                <h1 class="slide-title">问题打分表<span class="em">模板</span>（示例）</h1>
+            </div>
+            <p class="lead reveal">每道候选问题按三维打分、相乘得综合分、落入象限，明确目标 —— 可直接用于交付。</p>
+            <div class="reveal" style="margin-top:30px;">
+                <table class="tbl" style="font-size:23px;">
+                    <thead><tr>
+                        <th style="width:52px;">#</th><th>候选问题</th>
+                        <th style="width:110px;">热度</th><th style="width:150px;">用户旅程</th><th style="width:110px;">AI 表现</th>
+                        <th style="width:110px;">综合分</th><th style="width:120px;">象限</th><th style="width:150px;">目标</th>
+                    </tr></thead>
+                    <tbody>
+                        <tr><td class="mono">1</td><td>静音扫地机推荐哪款好？</td><td class="mono">4</td><td>5 · 购买决策</td><td class="mono">4</td><td class="mono" style="color:var(--accent);font-weight:700;">80</td><td style="color:var(--accent);">主攻</td><td class="muted">进前 3</td></tr>
+                        <tr><td class="mono">2</td><td>扫地机哪个牌子好？</td><td class="mono">5</td><td>5 · 购买决策</td><td class="mono">2</td><td class="mono" style="color:var(--cyan);font-weight:700;">50</td><td style="color:var(--cyan);">曝光</td><td class="muted">第 7 → 第 4</td></tr>
+                        <tr><td class="mono">3</td><td>XX 扫地机能扫宠物毛吗？</td><td class="mono">2</td><td>4 · 对比评估</td><td class="mono">5</td><td class="mono" style="font-weight:700;">40</td><td>守住</td><td class="muted">保持第 1</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="deck-foot"><span>附录 · 打分表模板</span><span>11 / 12</span></div>
+    </section>
+
+    <!-- ============ 12. 收尾 ============ -->
+    <section class="slide closing">
+        <div class="orbit" aria-hidden="true" style="opacity:0.4;">
+            <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+            <div class="pin"></div>
+        </div>
+        <div class="slide-content" style="justify-content:center;">
+            <div class="kicker reveal">结语</div>
+            <h2 class="reveal">投放聚焦于<span class="em">真正有人问、能带来生意</span>、<br>且 AI 有机会推荐品牌的问题，<br>让效果数据<span class="em-c">真实、可信、可复核</span>。</h2>
+            <div class="fin-meta reveal">GEO 问题选择策略 · 面向客户方法论说明</div>
+        </div>
+        <div class="deck-foot"><span>THANK YOU</span><span>12 / 12</span></div>
+    </section>
+
+</main>
+</div>
+
+<div class="pager" id="pager">01 / 12</div>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="编辑模式 (E)">✏️</button>
+
+<script>
+/* ===========================================
+   幻灯片控制器：键盘 / 触摸 / 滚轮 + 缩放 + 进度
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.stage = document.getElementById('deckStage');
+        this.progress = document.getElementById('progress');
+        this.pager = document.getElementById('pager');
+        this.setupScale();
+        this.setupKeys();
+        this.setupTouch();
+        this.setupWheel();
+        this.show(0);
+    }
+    setupScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+    setupKeys() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true') return;
+            if (['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) { e.preventDefault(); this.next(); }
+            else if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); this.prev(); }
+            else if (e.key === 'Home') this.show(0);
+            else if (e.key === 'End') this.show(this.slides.length - 1);
+        });
+    }
+    setupTouch() {
+        let sx = 0, sy = 0;
+        document.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+        document.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) { dx < 0 ? this.next() : this.prev(); }
+        }, {passive:true});
+    }
+    setupWheel() {
+        let lock = false;
+        window.addEventListener('wheel', (e) => {
+            if (lock) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            e.deltaY > 0 ? this.next() : this.prev();
+            setTimeout(() => lock = false, 800);
+        }, {passive:true});
+    }
+    next() { if (this.current < this.slides.length - 1) this.show(this.current + 1); }
+    prev() { if (this.current > 0) this.show(this.current - 1); }
+    show(i) {
+        this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+        this.slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === this.current);
+            s.classList.toggle('visible', idx === this.current);
+        });
+        const pct = ((this.current + 1) / this.slides.length) * 100;
+        this.progress.style.width = pct + '%';
+        const n = String(this.current + 1).padStart(2, '0');
+        const t = String(this.slides.length).padStart(2, '0');
+        this.pager.textContent = `${n} / ${t}`;
+    }
+}
+const deck = new SlidePresentation();
+
+/* ===========================================
+   内联编辑（默认开启）：E 键 / 悬停左上角 / 点击热区
+   =========================================== */
+const editor = {
+    isActive: false,
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        const btn = document.getElementById('editToggle');
+        btn.classList.toggle('active', this.isActive);
+        btn.classList.toggle('show', this.isActive);
+        document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide h4, .slide p, .slide td, .slide .qname, .slide .qdesc, .slide .desc, .slide .role')
+            .forEach(el => el.setAttribute('contenteditable', this.isActive));
+    }
+};
+const hotzone = document.querySelector('.edit-hotzone');
+const editToggle = document.getElementById('editToggle');
+let hideTimeout = null;
+hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+editToggle.addEventListener('click', () => editor.toggleEditMode());
+hotzone.addEventListener('click', () => editor.toggleEditMode());
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'e' || e.key === 'E') && !(e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true')) {
+        editor.toggleEditMode();
+    }
+});
+</script>
 </body>
+</html>
