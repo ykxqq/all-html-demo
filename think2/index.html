@@ -1,4 +1,852 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO问题生成策略 · 生成式搜索时代的品牌占位方法论</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F1EA;          /* 温暖象牙纸 */
+    --paper-2:#EDE8DD;        /* 次级纸面 */
+    --paper-3:#E6E0D2;        /* 卡片描边/分隔 */
+    --ink:#16181D;            /* 富黑正文 */
+    --ink-2:#3A3D44;          /* 次级墨 */
+    --ink-3:#6E6F6B;          /* 弱化说明 */
+    --pine:#1F4E46;           /* 深松石绿 · 结构/权威 */
+    --pine-2:#2E6B60;         /* 松石亮部 */
+    --pine-wash:#E4EAE4;      /* 松石淡底 */
+    --amber:#DA6A2C;          /* 信号琥珀 · 关键指标 */
+    --amber-wash:#F6E7D8;     /* 琥珀淡底 */
+    --line:#D7D0C1;           /* 细线 */
+    --serif:"Noto Serif SC",serif;
+    --sans:"Noto Sans SC","Space Grotesk",sans-serif;
+    --grotesk:"Space Grotesk","Noto Sans SC",sans-serif;
+    --mono:"JetBrains Mono",monospace;
+    --wrap:860px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-weight:300;
+    line-height:1.85;
+    font-size:17px;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#fff}
+
+  /* 顶部进度条 */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--amber);z-index:100;transition:width .1s linear}
+
+  /* 顶部细栏 */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:52px;z-index:90;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);
+    background:rgba(244,241,234,.82);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    font-family:var(--grotesk);
+  }
+  .topbar .mark{font-weight:700;letter-spacing:.14em;font-size:14px;color:var(--pine)}
+  .topbar .mark b{color:var(--amber)}
+  .topbar .mark-sub{color:var(--ink-3);font-weight:400;letter-spacing:.02em;margin-left:12px;font-size:11.5px}
+  .topbar nav{display:flex;gap:22px;font-size:12px;letter-spacing:.05em}
+  .topbar nav a{color:var(--ink-2);text-decoration:none;transition:color .2s}
+  .topbar nav a:hover{color:var(--amber)}
+  @media(max-width:720px){.topbar nav{display:none}.topbar .mark-sub{display:none}}
+
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(20px,5vw,32px)}
+
+  /* ============ 封面 ============ */
+  .cover{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    position:relative;padding:120px 0 80px;
+    background:
+      radial-gradient(120% 90% at 88% 8%, rgba(31,78,70,.07), transparent 55%),
+      radial-gradient(90% 70% at 8% 95%, rgba(218,106,44,.06), transparent 55%);
+    overflow:hidden;
+  }
+  /* 封面背景：漏斗母题的极简线条 */
+  .cover-motif{position:absolute;top:0;right:-6%;width:min(48vw,560px);height:100%;opacity:.5;pointer-events:none}
+  .cover .eyebrow{
+    font-family:var(--grotesk);font-size:13px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--pine);font-weight:600;margin-bottom:26px;display:flex;align-items:center;gap:14px;
+  }
+  .cover .eyebrow::before{content:"";width:44px;height:1.5px;background:var(--amber)}
+  .cover h1{
+    font-family:var(--serif);font-weight:900;
+    font-size:clamp(38px,7.2vw,82px);line-height:1.06;letter-spacing:-.01em;
+    color:var(--ink);margin-bottom:8px;
+  }
+  .cover h1 .accent{color:var(--pine);position:relative}
+  .cover .lead-en{
+    font-family:var(--grotesk);font-weight:500;color:var(--amber);
+    font-size:clamp(15px,2.4vw,22px);letter-spacing:.02em;margin:22px 0 30px;
+  }
+  .cover .subtitle{
+    font-size:clamp(16px,2.1vw,20px);color:var(--ink-2);font-weight:300;max-width:640px;
+    line-height:1.8;text-wrap:pretty;
+  }
+  .cover .meta{
+    display:flex;flex-wrap:wrap;gap:28px 44px;margin-top:56px;padding-top:30px;
+    border-top:1px solid var(--line);font-family:var(--grotesk);
+  }
+  .cover .meta .m{display:flex;flex-direction:column;gap:4px}
+  .cover .meta .m .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+  .cover .meta .m .v{font-size:16px;font-weight:600;color:var(--pine)}
+  .scroll-hint{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    font-family:var(--grotesk);font-size:11px;letter-spacing:.2em;color:var(--ink-3);
+    display:flex;flex-direction:column;align-items:center;gap:8px;animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+  .scroll-hint .dot{width:1px;height:26px;background:linear-gradient(var(--ink-3),transparent)}
+
+  /* ============ 章节结构 ============ */
+  section.chapter{padding:96px 0 40px;position:relative}
+  .chap-head{margin-bottom:52px}
+  .chap-num{
+    font-family:var(--grotesk);font-weight:700;font-size:clamp(52px,9vw,104px);
+    line-height:.85;color:transparent;-webkit-text-stroke:1.5px var(--pine);opacity:.32;
+    letter-spacing:-.02em;margin-bottom:-.15em;
+  }
+  .chap-kicker{font-family:var(--grotesk);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--amber);font-weight:600;margin:18px 0 10px}
+  .chap-head h2{
+    font-family:var(--serif);font-weight:700;font-size:clamp(28px,4.6vw,46px);
+    line-height:1.15;color:var(--ink);letter-spacing:-.01em;
+  }
+  .chap-head .desc{margin-top:16px;color:var(--ink-2);font-size:17px;max-width:680px;text-wrap:pretty}
+
+  h3{font-family:var(--serif);font-weight:600;font-size:clamp(20px,2.8vw,26px);color:var(--pine);margin:44px 0 16px;line-height:1.3}
+  h4{font-family:var(--grotesk);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin:28px 0 12px;display:flex;align-items:center;gap:10px}
+  h4::before{content:"";width:18px;height:2px;background:var(--amber)}
+  p{margin:0 0 18px;text-wrap:pretty;color:var(--ink-2)}
+  strong{font-weight:700;color:var(--ink)}
+  em{font-style:normal;background:linear-gradient(transparent 62%,var(--amber-wash) 62%);padding:0 2px;color:var(--ink);font-weight:500}
+  a.inline{color:var(--pine);text-decoration:none;border-bottom:1.5px solid var(--amber);padding-bottom:1px;font-weight:500;word-break:break-all}
+  a.inline:hover{background:var(--amber-wash)}
+
+  ol,ul{margin:0 0 20px;padding-left:0;list-style:none}
+  ol li,ul li{position:relative;padding-left:34px;margin-bottom:12px;color:var(--ink-2)}
+  ul li::before{content:"";position:absolute;left:8px;top:.72em;width:6px;height:6px;background:var(--amber);border-radius:50%}
+  ol{counter-reset:li}
+  ol li{counter-increment:li}
+  ol li::before{content:counter(li);position:absolute;left:0;top:.1em;font-family:var(--grotesk);font-weight:600;font-size:12px;color:var(--pine);border:1.5px solid var(--pine);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;line-height:1}
+
+  .divider{height:1px;background:var(--line);margin:24px 0;border:0}
+
+  /* ============ 签名：有效触达量公式 ============ */
+  .formula{
+    background:var(--ink);color:var(--paper);border-radius:6px;
+    padding:clamp(28px,5vw,52px);margin:36px 0;position:relative;overflow:hidden;
+    box-shadow:0 24px 60px -30px rgba(22,24,29,.6);
+  }
+  .formula::before{content:"CORE METRIC";position:absolute;top:20px;right:24px;font-family:var(--grotesk);font-size:10px;letter-spacing:.3em;color:rgba(244,241,234,.32)}
+  .formula .fl-label{font-family:var(--grotesk);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+  .formula .eq{
+    font-family:var(--mono);font-size:clamp(15px,2.4vw,22px);line-height:1.7;color:var(--paper);
+    display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-weight:500;
+  }
+  .formula .eq .term{background:rgba(244,241,234,.08);padding:4px 12px;border-radius:4px;white-space:nowrap}
+  .formula .eq .op{color:var(--amber);font-weight:700}
+  .formula .eq .res{color:var(--pine-2);border-bottom:2px solid var(--pine-2)}
+  .formula .coef{
+    margin-top:26px;padding-top:22px;border-top:1px dashed rgba(244,241,234,.18);
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;
+  }
+  .formula .coef .c{text-align:center;font-family:var(--grotesk)}
+  .formula .coef .c .rank{font-size:11px;letter-spacing:.1em;color:rgba(244,241,234,.6);text-transform:uppercase}
+  .formula .coef .c .val{font-size:clamp(22px,4vw,30px);font-weight:700;color:var(--paper);margin-top:4px}
+  .formula .coef .c.zero .val{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--amber)}
+
+  /* ============ 五大原则 卡片 ============ */
+  .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:8px 0}
+  .principle{background:var(--paper);padding:30px 26px;transition:background .25s}
+  .principle:hover{background:var(--paper-2)}
+  .principle .pn{font-family:var(--grotesk);font-weight:700;font-size:40px;color:var(--pine-wash);line-height:1;-webkit-text-stroke:1px var(--pine);color:transparent;margin-bottom:14px}
+  .principle h5{font-family:var(--serif);font-weight:600;font-size:19px;color:var(--ink);margin-bottom:10px}
+  .principle p{font-size:14.5px;line-height:1.75;margin:0;color:var(--ink-2)}
+
+  /* ============ 六大维度 透镜网格 ============ */
+  .lens-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:12px}
+  @media(max-width:760px){.lens-grid{grid-template-columns:1fr}}
+  .lens{
+    background:var(--paper);border:1px solid var(--paper-3);border-radius:8px;
+    padding:28px 26px 26px;position:relative;transition:transform .25s,box-shadow .25s,border-color .25s;
+  }
+  .lens:hover{transform:translateY(-4px);box-shadow:0 20px 44px -28px rgba(31,78,70,.45);border-color:var(--pine)}
+  .lens .lens-top{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .lens .lens-id{font-family:var(--grotesk);font-weight:700;font-size:15px;color:var(--paper);background:var(--pine);width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .lens h5{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--ink);line-height:1.25}
+  .lens .lens-note{font-size:13.5px;color:var(--ink-3);margin-bottom:18px;line-height:1.65}
+  .lens .block-label{font-family:var(--grotesk);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
+  .lens .block-label.insight{color:var(--pine-2)}
+  .lens .block-label.action{color:var(--amber);margin-top:16px}
+  .lens ol li,.lens ul li{font-size:13.5px;line-height:1.6;margin-bottom:7px;padding-left:26px}
+  .lens ol li::before{width:18px;height:18px;font-size:10px;top:.15em}
+  .lens ul li::before{top:.6em;width:5px;height:5px}
+
+  /* ============ 三层矩阵 漏斗 ============ */
+  .funnel-wrap{margin:20px 0 40px}
+  .funnel{display:flex;flex-direction:column;gap:14px;align-items:center}
+  .tier{
+    width:100%;color:var(--paper);border-radius:8px;padding:26px clamp(20px,4vw,38px);
+    position:relative;overflow:hidden;transition:transform .3s;
+    display:grid;grid-template-columns:auto 1fr auto;gap:clamp(16px,3vw,40px);align-items:center;
+  }
+  .tier:hover{transform:scale(1.015)}
+  .tier.t1{background:linear-gradient(100deg,#2E6B60,#3d8578);max-width:100%}
+  .tier.t2{background:linear-gradient(100deg,#1F4E46,#2E6B60);max-width:82%}
+  .tier.t3{background:linear-gradient(100deg,#B4531F,#DA6A2C);max-width:60%}
+  .tier .t-pct{font-family:var(--grotesk);font-weight:700;font-size:clamp(34px,6vw,56px);line-height:1;letter-spacing:-.02em}
+  .tier .t-body .t-name{font-family:var(--serif);font-weight:700;font-size:clamp(18px,3vw,24px);margin-bottom:6px}
+  .tier .t-body .t-goal{font-size:13.5px;line-height:1.55;color:rgba(244,241,234,.88);font-weight:300}
+  .tier .t-target{text-align:right;font-family:var(--grotesk);flex-shrink:0}
+  .tier .t-target .tt-k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,241,234,.6)}
+  .tier .t-target .tt-v{font-size:14px;font-weight:600;margin-top:3px;line-height:1.4;white-space:nowrap}
+  @media(max-width:680px){
+    .tier{grid-template-columns:auto 1fr;gap:14px}
+    .tier.t2,.tier.t3{max-width:100%}
+    .tier .t-target{grid-column:1 / -1;text-align:left;display:flex;gap:20px;margin-top:6px;border-top:1px solid rgba(244,241,234,.2);padding-top:12px}
+    .tier .t-target .tt-v{white-space:normal}
+  }
+  .funnel-axis{text-align:center;font-family:var(--grotesk);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-top:6px}
+
+  /* 数据表 */
+  .tablewrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+  thead th{background:var(--pine);color:var(--paper);font-family:var(--grotesk);font-weight:600;font-size:12px;letter-spacing:.06em;padding:14px 16px;text-align:left;text-transform:uppercase}
+  tbody td{padding:16px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top;line-height:1.6}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:nth-child(even){background:var(--paper-2)}
+  tbody td:first-child{font-family:var(--grotesk);font-weight:700;color:var(--pine);white-space:nowrap}
+
+  /* 动态调整 pill */
+  .adjust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:16px 0}
+  .adjust{background:var(--pine-wash);border-left:3px solid var(--pine);border-radius:0 6px 6px 0;padding:18px 20px}
+  .adjust .a-tag{font-family:var(--grotesk);font-weight:600;font-size:13px;color:var(--pine);margin-bottom:6px}
+  .adjust p{font-size:13.5px;margin:0;line-height:1.6}
+
+  /* ============ 引用/关系图说明 ============ */
+  .callout{
+    background:var(--pine-wash);border-radius:8px;padding:26px 30px;margin:28px 0;
+    border:1px solid #cddccb;position:relative;
+  }
+  .callout .co-label{font-family:var(--grotesk);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--pine);font-weight:600;margin-bottom:12px}
+  .callout p{color:var(--ink-2);margin-bottom:10px;font-size:15px}
+  .callout .relation{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:18px 0 8px;font-family:var(--grotesk)}
+  .callout .relation .box{background:var(--paper);border:1.5px solid var(--pine);border-radius:8px;padding:12px 18px;text-align:center}
+  .callout .relation .box .bn{font-weight:700;color:var(--pine);font-size:20px}
+  .callout .relation .box .bl{font-size:11px;color:var(--ink-3);letter-spacing:.06em;margin-top:2px}
+  .callout .relation .arrow{color:var(--amber);font-size:26px;font-weight:700}
+
+  blockquote{
+    border-left:3px solid var(--amber);background:var(--amber-wash);
+    padding:18px 24px;margin:24px 0;border-radius:0 6px 6px 0;
+    font-size:15px;color:var(--ink);font-style:normal;
+  }
+  blockquote p:last-child{margin-bottom:0}
+
+  /* ============ 执行步骤 时间线 ============ */
+  .steps{position:relative;margin:20px 0;padding-left:0}
+  .steps::before{content:"";position:absolute;left:19px;top:12px;bottom:12px;width:2px;background:var(--line)}
+  .step{position:relative;padding:0 0 34px 60px}
+  .step:last-child{padding-bottom:0}
+  .step .s-node{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--paper);border:2px solid var(--pine);display:flex;align-items:center;justify-content:center;font-family:var(--grotesk);font-weight:700;color:var(--pine);z-index:2}
+  .step .s-title{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--ink);margin-bottom:6px}
+  .step .s-deliver{display:inline-flex;align-items:center;gap:8px;font-family:var(--grotesk);font-size:12px;font-weight:500;color:var(--amber);background:var(--amber-wash);padding:5px 12px;border-radius:20px;margin-bottom:14px}
+  .step .s-deliver::before{content:"交付物";font-size:9px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+  .step ol li{font-size:14.5px;margin-bottom:8px}
+
+  /* ============ 触发条件 / 质量保障 ============ */
+  .trigger-grid,.qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:12px}
+  .tcard{background:var(--paper);border:1px solid var(--paper-3);border-top:3px solid var(--amber);border-radius:0 0 8px 8px;padding:22px 22px}
+  .tcard .tc-num{font-family:var(--grotesk);font-weight:700;font-size:13px;color:var(--amber);margin-bottom:8px}
+  .tcard p{font-size:14px;margin:0;line-height:1.65}
+  .qcard{background:var(--paper);border:1px solid var(--paper-3);border-radius:8px;padding:24px 24px;transition:border-color .2s}
+  .qcard:hover{border-color:var(--pine)}
+  .qcard .q-icon{font-family:var(--grotesk);font-weight:700;color:var(--pine);font-size:15px;letter-spacing:.08em;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .qcard h5{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);margin-bottom:8px}
+  .qcard p{font-size:14px;margin:0;line-height:1.7}
+
+  /* ============ 附录 清单 ============ */
+  .checklist{margin:24px 0;display:grid;gap:2px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .check-item{background:var(--paper);padding:18px 22px;display:flex;align-items:flex-start;gap:16px;transition:background .2s;cursor:default}
+  .check-item:hover{background:var(--pine-wash)}
+  .check-item .cbox{width:22px;height:22px;border:2px solid var(--pine);border-radius:5px;flex-shrink:0;margin-top:2px;position:relative;transition:background .2s}
+  .check-item:hover .cbox{background:var(--pine)}
+  .check-item:hover .cbox::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--paper);font-size:14px;font-weight:700}
+  .check-item .ctext{font-size:15px;color:var(--ink-2);line-height:1.6;padding-top:1px}
+
+  /* ============ 页脚 ============ */
+  footer{background:var(--ink);color:var(--paper);padding:70px 0 50px;margin-top:80px}
+  footer .wrap{display:flex;flex-direction:column;gap:24px}
+  footer .f-mark{font-family:var(--grotesk);font-weight:700;letter-spacing:.14em;font-size:20px}
+  footer .f-mark b{color:var(--amber)}
+  footer .f-title{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--paper);max-width:560px;line-height:1.4}
+  footer .f-note{font-family:var(--grotesk);font-size:12px;color:rgba(244,241,234,.5);letter-spacing:.04em;border-top:1px solid rgba(244,241,234,.15);padding-top:24px}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:560px){
+    body{font-size:16px}
+    .principles{grid-template-columns:1fr}
+  }
+</style>
+</head>
 <body>
-<h1>这是demo1页面</h1>
+
+<div class="progress" id="progress"></div>
+
+<div class="topbar">
+  <div class="mark">GEO<b>·</b>STRATEGY <span class="mark-sub">生成式引擎优化方法论</span></div>
+  <nav>
+    <a href="#c1">背景</a>
+    <a href="#c2">原则</a>
+    <a href="#c3">六大维度</a>
+    <a href="#c4">三层矩阵</a>
+    <a href="#c5">执行流程</a>
+    <a href="#appendix">交付清单</a>
+  </nav>
+</div>
+
+<!-- ================= 封面 ================= -->
+<header class="cover">
+  <svg class="cover-motif" viewBox="0 0 400 800" fill="none" preserveAspectRatio="xMidYMid meet">
+    <path d="M40 120 H360 L300 320 H100 Z" stroke="#1F4E46" stroke-width="1.2" opacity=".5"/>
+    <path d="M100 340 H300 L255 540 H145 Z" stroke="#1F4E46" stroke-width="1.2" opacity=".7"/>
+    <path d="M145 560 H255 L215 720 H185 Z" stroke="#DA6A2C" stroke-width="1.6"/>
+    <circle cx="200" cy="640" r="4" fill="#DA6A2C"/>
+    <line x1="200" y1="120" x2="200" y2="720" stroke="#1F4E46" stroke-width=".6" stroke-dasharray="3 6" opacity=".4"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">Generative Engine Optimization</div>
+    <h1>GEO问题<br><span class="accent">生成策略</span></h1>
+    <div class="lead-en">Brand Positioning in the Age of Generative Search</div>
+    <p class="subtitle">当 AI 回答取代搜索排名，成为品牌曝光与用户决策的关键战场——一套从问题规划、矩阵组合到效果迭代的完整方法论，让每一次 AI 曝光都转化为真实的品牌触达价值。</p>
+    <div class="meta">
+      <div class="m"><span class="k">文档类型</span><span class="v">策略方法论</span></div>
+      <div class="m"><span class="k">核心指标</span><span class="v">有效触达量</span></div>
+      <div class="m"><span class="k">策略维度</span><span class="v">六维 · 三层矩阵</span></div>
+      <div class="m"><span class="k">适用范围</span><span class="v">全品类品牌</span></div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><span class="dot"></span></div>
+</header>
+
+<main>
+
+<!-- ================= 一、背景 ================= -->
+<section class="chapter" id="c1">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">I</div>
+      <div class="chap-kicker">Background & Goals</div>
+      <h2>策略背景与目标</h2>
+      <p class="desc">在生成式 AI 成为核心信息入口的今天，品牌在 AI 回答中的提及与排名，正在取代传统搜索排名。</p>
+    </div>
+
+    <div class="reveal">
+      <h3>1.1 为什么需要 GEO 问题策略</h3>
+      <p>随着生成式 AI 成为用户获取信息的核心入口，品牌在 AI 回答中的提及与排名，正在取代传统搜索排名，成为新一代品牌曝光与用户决策的关键战场。<strong>GEO（Generative Engine Optimization，生成式引擎优化）</strong>通过系统性的问题规划与内容布局，帮助品牌在 AI 生成的回答中获得稳定、高价值的品牌露出。</p>
+      <p>本策略文档旨在为品牌提供一套从问题规划、矩阵组合到效果迭代的完整方法论，确保每一次 AI 曝光都能转化为真实的品牌触达价值。</p>
+    </div>
+
+    <div class="reveal">
+      <h3>1.2 核心价值衡量体系</h3>
+      <p>我们以<em>单问题有效触达量</em>作为策略效果的核心衡量指标，确保品牌投入的每一分预算都对应真实可见的用户触达：</p>
+
+      <div class="formula">
+        <div class="fl-label">有效触达量 · Effective Reach</div>
+        <div class="eq">
+          <span class="term res">有效触达量</span>
+          <span class="op">=</span>
+          <span class="term">周期内提问量</span>
+          <span class="op">×</span>
+          <span class="term">品牌 AI 提及率</span>
+          <span class="op">×</span>
+          <span class="term">提及位置系数</span>
+        </div>
+        <div class="coef">
+          <div class="c"><div class="rank">Top 1</div><div class="val">1.0</div></div>
+          <div class="c"><div class="rank">Top 2–3</div><div class="val">0.7</div></div>
+          <div class="c"><div class="rank">Top 4–5</div><div class="val">0.4</div></div>
+          <div class="c zero"><div class="rank">5 名以外</div><div class="val">0</div></div>
+        </div>
+      </div>
+
+      <p>这一指标体系的核心价值在于：</p>
+      <ul>
+        <li><strong>对品牌而言：</strong>保障热度流量不浪费，所有曝光均为用户真实看到的品牌露出，而非虚高的数字游戏。</li>
+        <li><strong>对投放而言：</strong>避免纯长尾低质问题刷数据，交付结果与品牌商业价值直接挂钩。</li>
+      </ul>
+    </div>
+
+    <div class="reveal">
+      <h3>1.3 适用场景</h3>
+      <p>本策略适用于全品类品牌在通用大模型、垂类 AI 产品中的生成式搜索优化项目，覆盖<strong>投放前问题规划、投放中效果迭代、项目终效果验收</strong>全流程。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 二、五大原则 ================= -->
+<section class="chapter" id="c2">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">II</div>
+      <div class="chap-kicker">Five Principles</div>
+      <h2>策略设计五大原则</h2>
+      <p class="desc">五条底层准则，统领所有问题的筛选、组合与评估——一切以「有效触达量」为核心对齐。</p>
+    </div>
+
+    <div class="principles reveal">
+      <div class="principle">
+        <div class="pn">01</div>
+        <h5>价值统一原则</h5>
+        <p>不以单一热度或单一提及率为评判标准，所有问题均以「有效触达量」为核心评估依据，确保品牌曝光与实际触达价值对齐。</p>
+      </div>
+      <div class="principle">
+        <div class="pn">02</div>
+        <h5>分层适配原则</h5>
+        <p>不要求单个问题同时满足「高热度 + 高提及」，通过「流量层 – 效果层 – 精准层」三级矩阵组合，整体达成曝光规模与占位效果双重目标。</p>
+      </div>
+      <div class="principle">
+        <div class="pn">03</div>
+        <h5>差异化占位原则</h5>
+        <p>优先切入品牌有差异化优势、竞品占位薄弱、用户有真实需求的空白赛道，避免在头部竞品的优势问题上硬碰硬，以更低成本获得更高占位。</p>
+      </div>
+      <div class="principle">
+        <div class="pn">04</div>
+        <h5>模型原生原则</h5>
+        <p>所有问题设计必须适配 AI 大模型的生成逻辑、信源偏好与排序规则，符合模型回答习惯的问题，才能获得稳定高排名。</p>
+      </div>
+      <div class="principle">
+        <div class="pn">05</div>
+        <h5>商业闭环原则</h5>
+        <p>问题设计需匹配用户决策旅程，兼顾曝光声量与转化价值，避免纯流量型无效问题，让每一次 AI 触达都服务于品牌的商业目标。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 三、六大维度 ================= -->
+<section class="chapter" id="c3">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">III</div>
+      <div class="chap-kicker">Six Strategic Lenses</div>
+      <h2>六大策略维度</h2>
+      <p class="desc">六个「筛选透镜」，从不同角度对候选问题进行筛选与打分，最终汇聚成三层矩阵的配比输入。</p>
+    </div>
+
+    <div class="lens-grid">
+      <!-- 3.1 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.1</span><h5>市场与品类生态</h5></div>
+        <p class="lens-note">基于品牌所处赛道与行业地位，匹配合理的问题难度与预期，避免脱离现实的目标设定。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>品牌梯队：头部 / 中腰部 / 新锐，对应不同 AI 默认提及权重</li>
+          <li>品类 AI 饱和度：寡头型 &lt;3 个 / 均衡型 3–6 个 / 分散型 &gt;6 个</li>
+          <li>品类语料权重：官网 / 电商 / 专业测评 / 内容社区</li>
+          <li>用户渠道偏好：不同品类的提问场景差异</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>头部布局 30%–40% 高热泛词；新锐泛词 ≤20%，优先细分赛道</li>
+          <li>寡头型减泛词、抢细分场景词；分散型可扩大泛词覆盖</li>
+          <li>内容配套素材向模型高权重渠道倾斜</li>
+        </ul>
+      </div>
+
+      <!-- 3.2 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.2</span><h5>竞品占位分析</h5></div>
+        <p class="lens-note">从「竞品有什么卖点」转向「竞品在哪些 AI 问题上已占据高位」，规避正面竞争，挖掘空白机会。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>核心竞品清单：直接对标的 Top3–5 品牌</li>
+          <li>竞品高占位问题：稳定进入 Top3 的类型、场景、句式</li>
+          <li>竞品占位空白区：高关注度、无明确品牌指向的问题</li>
+          <li>竞品核心卖点：已获 AI 高提及的功能 / 场景标签</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>竞品垄断 Top1 的高热问题不纳入核心，仅做流量层随缘曝光</li>
+          <li>优选「提问量中等、竞品无稳定占位、无固定答案」作效果层核心</li>
+          <li>避开竞品核心卖点赛道，转向品牌差异化卖点细分问题</li>
+        </ul>
+      </div>
+
+      <!-- 3.3 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.3</span><h5>品牌差异化锚点</h5></div>
+        <p class="lens-note">筛选「品牌独有 + 用户关心 + AI 易引用」的三角卖点，作为问题设计的核心锚点。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>品牌核心卖点清单：功能、参数、技术、场景、服务全维度</li>
+          <li>卖点独有性：是否行业首创 / 独家 / 专利技术</li>
+          <li>卖点可验证性：是否有数据、权威认证、官方信源支撑</li>
+          <li>卖点用户关注度：对应提问量级与搜索热度</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>精准层 100% 匹配品牌独家差异化卖点，保障 Top1</li>
+          <li>效果层匹配品牌强优势卖点，稳定进入 Top3</li>
+          <li>模糊主观卖点（「体验好」）须转化为可量化场景</li>
+        </ul>
+      </div>
+
+      <!-- 3.4 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.4</span><h5>用户决策旅程</h5></div>
+        <p class="lens-note">匹配用户不同决策阶段的提问习惯，对应不同层级的问题布局，兼顾曝光与转化。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>决策阶段：认知期 → 对比期 → 决策期，对应不同意图</li>
+          <li>提问句式：开放推荐 / 封闭场景 / 参数对比 / 售后咨询</li>
+          <li>问题生命周期：长期稳态 / 季节性 / 热点事件词</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>认知期（「什么牌子好」）→ 流量层，做曝光</li>
+          <li>对比期（「A 和 B 哪个好」）→ 效果层，做种草</li>
+          <li>决策期（「售后靠谱吗」）→ 精准层，做收口</li>
+          <li>封闭式限定场景问题，适合效果层与精准层高占位</li>
+        </ul>
+      </div>
+
+      <!-- 3.5 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.5</span><h5>AI 模型规则适配</h5></div>
+        <p class="lens-note">GEO 区别于传统 SEO 的核心专属维度，所有问题设计必须适配模型原生逻辑。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>目标模型差异：信源偏好（官方 / 电商 / 内容）、风格、提及数</li>
+          <li>模型排序逻辑：知名度 / 匹配度 / 信源权威性 / 用户口碑</li>
+          <li>模型风控规则：易被降权、过滤、判广告的问题类型</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>官方信源模型多布局背书类；内容平台模型多布局口碑场景类</li>
+          <li>用自然句式，避免强引导、硬广触发风控</li>
+          <li>同一问题在目标模型中预验证，确认逻辑与排序符合预期</li>
+        </ul>
+      </div>
+
+      <!-- 3.6 -->
+      <div class="lens reveal">
+        <div class="lens-top"><span class="lens-id">3.6</span><h5>商业价值平衡</h5></div>
+        <p class="lens-note">平衡问题的热度流量与转化价值，保障品牌投放的商业回报。</p>
+        <div class="block-label insight">策略洞察</div>
+        <ol>
+          <li>问题类型价值：信息型（低）/ 对比型（中）/ 决策型（高转化）</li>
+          <li>品类决策权重：对应问题在购买决策中的影响程度</li>
+          <li>品牌阶段适配：新品期侧重曝光，成熟期侧重转化</li>
+        </ol>
+        <div class="block-label action">布局建议</div>
+        <ul>
+          <li>流量层→信息型；效果层→对比型；精准层→决策型</li>
+          <li>高客单重决策品类，提高参数对比、场景、售后类占比</li>
+          <li>低客单轻决策品类，提高场景推荐、口碑评价类占比</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 四、三层矩阵 ================= -->
+<section class="chapter" id="c4">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">IV</div>
+      <div class="chap-kicker">Three-Tier Matrix</div>
+      <h2>三层问题矩阵策略</h2>
+      <p class="desc">六大维度的筛选结果，最终汇聚为流量层、效果层、精准层的组合结构——规模与占位双重达成。</p>
+    </div>
+
+    <div class="reveal">
+      <h3>4.1 矩阵分层标准</h3>
+      <div class="funnel-wrap">
+        <div class="funnel">
+          <div class="tier t1">
+            <div class="t-pct">30%</div>
+            <div class="t-body">
+              <div class="t-name">流量层</div>
+              <div class="t-goal">高热度泛品类、行业大词 · 最大化用户触达规模，满足品牌曝光需求</div>
+            </div>
+            <div class="t-target"><div class="tt-k">预期效果</div><div class="tt-v">进入回答前 5 达标<br>不强制 Top3</div></div>
+          </div>
+          <div class="tier t2">
+            <div class="t-pct">50%</div>
+            <div class="t-body">
+              <div class="t-name">效果层</div>
+              <div class="t-goal">中热度细分场景、强关联问题 · 平衡热度与提及率，项目效果基本盘</div>
+            </div>
+            <div class="t-target"><div class="tt-k">预期效果</div><div class="tt-v">稳定进入 Top3<br>提及率 ≥ 80%</div></div>
+          </div>
+          <div class="tier t3">
+            <div class="t-pct">20%</div>
+            <div class="t-body">
+              <div class="t-name">精准层</div>
+              <div class="t-goal">长尾差异化、强品牌关联问题 · 保障占位达标率，锁定高转化用户</div>
+            </div>
+            <div class="t-target"><div class="tt-k">预期效果</div><div class="tt-v">100% 提及品牌<br>稳定占据 Top1</div></div>
+          </div>
+        </div>
+        <div class="funnel-axis">曝光规模 ← ——————————————————— → 占位精度</div>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>层级</th><th>占比</th><th>问题属性</th><th>核心目标</th><th>选题方向</th></tr></thead>
+          <tbody>
+            <tr><td>流量层</td><td>30%</td><td>高热度泛品类、行业大词</td><td>最大化触达规模，满足曝光需求</td><td>品类推荐、行业排行、泛场景需求</td></tr>
+            <tr><td>效果层</td><td>50%</td><td>中热度细分场景、强关联</td><td>平衡热度与提及率，效果基本盘</td><td>细分场景、功能对比、特定人群适配</td></tr>
+            <tr><td>精准层</td><td>20%</td><td>长尾差异化、强品牌关联</td><td>保障占位达标，锁定高转化用户</td><td>独家卖点、品牌口碑、售后决策</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3>4.2 分层动态调整</h3>
+      <div class="adjust-grid">
+        <div class="adjust"><div class="a-tag">头部成熟品牌</div><p>流量层 ↑ 40%，精准层 ↓ 10%，侧重声量扩张。</p></div>
+        <div class="adjust"><div class="a-tag">新锐 / 中小品牌</div><p>流量层 ↓ 20%，精准层 ↑ 30%，侧重精准转化与占位交付。</p></div>
+        <div class="adjust"><div class="a-tag">新品上市期</div><p>流量层占比上浮 10%，侧重认知曝光。</p></div>
+        <div class="adjust"><div class="a-tag">大促节点期</div><p>精准层占比上浮 10%，侧重决策收口。</p></div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3>4.3 六大策略与三层矩阵的关系</h3>
+      <div class="callout">
+        <div class="co-label">Input → Output</div>
+        <p><strong>第三部分是 6 个「筛选透镜」（输入策略），第四部分是 3 层「组合结构」（输出矩阵）</strong>——6 个维度从不同角度对候选问题进行筛选和打分，最终汇聚成流量层、效果层、精准层的三层配比。</p>
+        <div class="relation">
+          <div class="box"><div class="bn">6</div><div class="bl">筛选透镜</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="bn">3</div><div class="bl">层级矩阵</div></div>
+          <span class="arrow">→</span>
+          <div class="box"><div class="bn">1</div><div class="bl">投放清单</div></div>
+        </div>
+        <p style="margin-top:8px;font-size:14px;color:var(--ink-3)">配套交互图：点击任意维度可查看其如何影响三层矩阵设计，并含从第三部分落地到第四部分的 5 步操作流程。</p>
+        <p style="margin:6px 0 0"><a class="inline" href="https://tmpf.smzdm.com/202608/28/b3ce3bae8da241079730a0efe9945a4a.html" target="_blank" rel="noopener">查看交互关系图 ↗</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 五、执行流程 ================= -->
+<section class="chapter" id="c5">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">V</div>
+      <div class="chap-kicker">Execution Workflow</div>
+      <h2>策略执行流程</h2>
+      <p class="desc">从需求对齐到上线迭代，六步闭环，每一步都有明确交付物与核心动作。</p>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="s-node">1</div>
+        <div class="s-title">需求对齐与基线确认</div>
+        <span class="s-deliver">《项目需求确认表》</span>
+        <ol>
+          <li>双方确认投放模型、投放周期、核心考核指标</li>
+          <li>确认品牌梯队、核心竞品、品牌核心卖点</li>
+          <li>确认三层问题占比、各层级预期效果与总有效触达量目标</li>
+        </ol>
+      </div>
+      <div class="step">
+        <div class="s-node">2</div>
+        <div class="s-title">候选问题池搭建</div>
+        <span class="s-deliver">《候选问题池》· 单品类 ≥ 100 条</span>
+        <ol>
+          <li>从 AI 热门提问、搜索长尾词、内容平台高赞、竞品高占位四渠道拉取原始问题</li>
+          <li>按用户真实提问句式清洗，剔除生硬、广告化、不符合口语习惯的问题</li>
+          <li>按六大策略维度进行初步分类打标</li>
+        </ol>
+      </div>
+      <div class="step">
+        <div class="s-node">3</div>
+        <div class="s-title">多维度筛选初评</div>
+        <span class="s-deliver">《初筛问题清单》· 最终量级的 2 倍</span>
+        <ol>
+          <li>剔除竞品垄断、模型风控、与品牌关联度极低的问题</li>
+          <li>按「预估热度 + 预估提及难度」双维度打分</li>
+          <li>按三层矩阵比例初步分配，形成初筛清单</li>
+        </ol>
+      </div>
+      <div class="step">
+        <div class="s-node">4</div>
+        <div class="s-title">小样本 AI 预测试</div>
+        <span class="s-deliver">《问题预测试报告》</span>
+        <ol>
+          <li>对所有初筛问题，在目标模型中进行原生回答测试</li>
+          <li>记录每条问题的品牌提及率、排名位置、回答中品牌数量</li>
+          <li>剔除提及率为 0、排名 5 名以外、无优化空间的问题</li>
+        </ol>
+      </div>
+      <div class="step">
+        <div class="s-node">5</div>
+        <div class="s-title">矩阵组合与双方确认</div>
+        <span class="s-deliver">《最终投放问题清单》</span>
+        <ol>
+          <li>按三层矩阵比例，从测试通过的问题中筛选最终清单</li>
+          <li>核算总预估有效触达量，同步品牌方确认</li>
+          <li>双方确认后锁定问题清单，作为项目验收基准</li>
+        </ol>
+      </div>
+      <div class="step">
+        <div class="s-node">6</div>
+        <div class="s-title">上线监测与动态迭代</div>
+        <span class="s-deliver">《双周效果迭代报告》</span>
+        <ol>
+          <li>每双周监测所有问题的真实提问量、提及率、排名位置</li>
+          <li>标记热度下滑 30% 以上、提及率降至达标线以下的问题</li>
+          <li>按「下架低效 → 补充新问题 → 预测试 → 上线」流程迭代</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 六、效果监测 ================= -->
+<section class="chapter" id="c6">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">VI</div>
+      <div class="chap-kicker">Monitoring & Optimization</div>
+      <h2>效果监测与持续优化</h2>
+    </div>
+
+    <div class="reveal">
+      <h3>6.1 效果核算方式</h3>
+      <div class="formula">
+        <div class="fl-label">项目总有效触达量</div>
+        <div class="eq">
+          <span class="term res">项目总有效触达量</span>
+          <span class="op">=</span>
+          <span class="op">∑</span>
+          <span class="term">周期提问量</span>
+          <span class="op">×</span>
+          <span class="term">实际提及率</span>
+          <span class="op">×</span>
+          <span class="term">位置系数</span>
+        </div>
+      </div>
+      <p>以总有效触达量是否达标为项目效果核心标准，不单独考核单问题热度或单问题提及率，确保品牌获得的是<strong>整体触达价值</strong>而非局部数字。</p>
+    </div>
+
+    <div class="reveal">
+      <h3>6.2 动态优化触发条件</h3>
+      <p>出现以下任意一种情况，启动问题替换迭代：</p>
+      <div class="trigger-grid">
+        <div class="tcard"><div class="tc-num">TRIGGER 01</div><p>连续两个监测周期，问题提及率低于对应层级预期标准。</p></div>
+        <div class="tcard"><div class="tc-num">TRIGGER 02</div><p>问题用户提问量环比下滑 50% 以上，且无回升预期。</p></div>
+        <div class="tcard"><div class="tc-num">TRIGGER 03</div><p>竞品强势占位，品牌排名掉出对应层级要求范围。</p></div>
+        <div class="tcard"><div class="tc-num">TRIGGER 04</div><p>出现行业热点、季节性需求，新增高价值问题赛道。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 七、质量保障 ================= -->
+<section class="chapter" id="c7">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">VII</div>
+      <div class="chap-kicker">Quality Assurance</div>
+      <h2>质量保障体系</h2>
+      <p class="desc">四条合规红线，确保品牌露出的稳定性、可持续性与形象一致性。</p>
+    </div>
+
+    <div class="qa-grid reveal">
+      <div class="qcard">
+        <div class="q-icon">01 · COMPLIANCE</div>
+        <h5>广告法合规</h5>
+        <p>问题设计不得包含极限词、虚假宣传、贬低竞品等违规表述，配套素材不得违反广告法要求。</p>
+      </div>
+      <div class="qcard">
+        <div class="q-icon">02 · RISK CONTROL</div>
+        <h5>模型风控合规</h5>
+        <p>禁止强引导、硬植入、违背用户真实提问逻辑的问题，避免被模型降权或过滤，确保露出稳定可持续。</p>
+      </div>
+      <div class="qcard">
+        <div class="q-icon">03 · BRAND VOICE</div>
+        <h5>品牌口径合规</h5>
+        <p>所有问题与配套内容需符合品牌官方口径，不得出现未经授权的承诺、参数、功能表述，维护形象一致性。</p>
+      </div>
+      <div class="qcard">
+        <div class="q-icon">04 · DATA TRUTH</div>
+        <h5>数据真实合规</h5>
+        <p>问题热度、提及率等数据需以双方认可的监测工具为准，确保效果数据真实可追溯。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 附录 ================= -->
+<section class="chapter" id="appendix">
+  <div class="wrap">
+    <div class="chap-head reveal">
+      <div class="chap-num">＊</div>
+      <div class="chap-kicker">Appendix · Delivery Checklist</div>
+      <h2>策略交付与成功标准</h2>
+      <p class="desc">GEO 问题生成策略的完整交付清单与成功标准核查。</p>
+    </div>
+
+    <div class="checklist reveal">
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已匹配品牌梯队与品类 AI 饱和度，问题难度符合品牌现状</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已完成核心竞品占位分析，规避竞品强势垄断问题</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">核心问题均匹配品牌差异化卖点，有明确信源支撑</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">问题已按用户决策旅程分层，覆盖认知 – 对比 – 决策全链路</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已适配目标模型的生成逻辑与信源偏好</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已通过小样本 AI 预测试，提及率与排名符合层级要求</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已按三层矩阵比例组合，整体核算总有效触达量</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">问题句式符合用户真实提问习惯，无硬广引导风险</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">内容符合广告法与品牌合规要求</span></div>
+      <div class="check-item"><span class="cbox"></span><span class="ctext">已明确监测周期与迭代规则，双方确认验收标准</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-mark">GEO<b>·</b>STRATEGY</div>
+    <div class="f-title">让每一次 AI 曝光，都转化为真实的品牌触达价值。</div>
+    <div class="f-note">GEO 问题生成策略 · 生成式搜索时代的品牌占位方法论　|　部分内容可能由 AI 生成</div>
+  </div>
+</footer>
+
+<script>
+  // 进度条
+  const progress=document.getElementById('progress');
+  const onScroll=()=>{
+    const h=document.documentElement;
+    const pct=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+    progress.style.width=pct+'%';
+  };
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  // reveal on scroll
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
 </body>
+</html>
