@@ -276,8 +276,29 @@
     .cases{grid-template-columns:repeat(2,1fr)}
     .steps{grid-template-columns:repeat(2,1fr)}
     .sop,.blogs{grid-template-columns:1fr}
+    .voh{grid-template-columns:1fr;gap:20px}
     .nav-dots,.deck-arrow,.scroll-hint{display:none}
     .panel .anim{opacity:1;transform:none}
+  }
+  @media(max-width:560px){
+    .panel{padding:46px 0}
+    .hero .wrap{gap:24px}
+    .sec-title{font-size:clamp(24px,7vw,30px)}
+    .cases,.steps,.honors{grid-template-columns:1fr}
+    /* 罗盘整体缩放以适配窄屏，浮标不再溢出 */
+    .compass{transform:scale(.72);transform-origin:top center;margin:0 auto -86px}
+    .tabs{flex-wrap:wrap;gap:6px}
+    .tab{flex:1 1 40%}
+    .layers-head{display:none}
+    .lrow{grid-template-columns:1fr;gap:8px;row-gap:6px}
+    .lrow .c-env{font-size:14px}
+    .quote-card .qt{font-size:15.5px}
+    .quote-card .thumb img{height:150px}
+    .honor .hpic{height:200px}
+    .metrics{gap:10px}
+    .modal{padding:12px}
+    .modal-box{height:86vh}
+    .lightbox{padding:16px}
   }
 </style>
 </head>
